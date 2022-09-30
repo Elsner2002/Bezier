@@ -112,6 +112,36 @@ void Poligono::LePoligono(const char *nome)
 
 }
 
+void Poligono::LePoligonoZ(const char *nome)
+{
+    ifstream input;            // ofstream arq;
+    input.open(nome, ios::in); //arq.open(nome, ios::out);
+    if (!input)
+    {
+        cout << "Erro ao abrir " << nome << ". " << endl;
+        exit(0);
+    }
+    cout << "Lendo arquivo " << nome << "...";
+    string S;
+    //int nLinha = 0;
+    unsigned int qtdVertices;
+    
+    input >> qtdVertices;  // arq << qtdVertices
+
+    for (int i=0; i< qtdVertices; i++)
+    {
+        double x,y,z;
+        // Le cada elemento da linha
+        input >> x >> y >> z; // arq << x  << " " << y << endl
+        if(!input)
+            break;
+        //nLinha++;
+        insereVertice(Ponto(x,y,z));
+    }
+    cout << "Poligono lido com sucesso!" << endl;
+
+}
+
 void Poligono::getAresta(int n, Ponto &P1, Ponto &P2)
 {
     P1 = Vertices[n];

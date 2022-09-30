@@ -165,9 +165,9 @@ void DesenhaHelicesGirando()
    glPopMatrix();
 }
 // **********************************************************************
-void DesenhaMastro(Cores cor)
+void DesenhaMastro()
 {   
-    defineCor(cor);
+    defineCor(LimeGreen);
     Mastro.desenhaPoligono();
 }
 // **********************************************************************
@@ -175,7 +175,7 @@ void DesenhaCatavento()
 {
     glLineWidth(3);
     glPushMatrix();
-        DesenhaMastro(BrightGold);
+        DesenhaMastro();
         glPushMatrix();
             glColor3f(1,0,0); // R, G, B  [0..1]
             glTranslated(0,3,0);
@@ -192,16 +192,16 @@ void CriaInstancias()
 {
     Personagens[0].Posicao = Ponto (0,0);
     Personagens[0].Rotacao = 0;
-    Personagens[0].modelo = DesenhaMastro(Firebrick);
+    Personagens[0].modelo = DesenhaMastro;
     Personagens[0].Escala = Ponto (1,1,1);
 
     Personagens[1].Posicao = Ponto (3,0);
     Personagens[1].Rotacao = -90;
-    Personagens[1].modelo = DesenhaMastro(LimeGreen);
+    Personagens[1].modelo = DesenhaMastro;
     
     Personagens[2].Posicao = Ponto (0,-5);
     Personagens[2].Rotacao = 0;
-    Personagens[2].modelo = DesenhaMastro(Firebrick);
+    Personagens[2].modelo = DesenhaMastro;
     
     nInstancias = 3;
 
@@ -215,7 +215,7 @@ void CarregaModelos()
     MeiaSeta.LePoligono("MeiaSeta.txt");
     Mastro.LePoligono("Mastro.txt");
     PontosCurvas.LePoligono("cordPontos.txt");
-    CurvasBZ.LePoligono("ListaCurvas.txt");
+    CurvasBZ.LePoligonoZ("ListaCurvas.txt");
 }
 void CriaCurvas()
 {
@@ -229,8 +229,8 @@ void CriaCurvas()
 // **********************************************************************
 void init()
 {
-    // Define a cor do fundo da tela (AZUL)
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    // Define a cor do fundo da tela (PRETO)
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     CarregaModelos();
     CriaInstancias();
@@ -259,6 +259,7 @@ void DesenhaCurvas()
 {
     for(int i=0; i<nCurvas;i++)
     {
+        defineCor(Gray);
         Curvas[i].Traca();
     }
 }
