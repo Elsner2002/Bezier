@@ -165,8 +165,9 @@ void DesenhaHelicesGirando()
    glPopMatrix();
 }
 // **********************************************************************
-void DesenhaMastro()
-{
+void DesenhaMastro(Cores cor)
+{   
+    defineCor(cor);
     Mastro.desenhaPoligono();
 }
 // **********************************************************************
@@ -174,8 +175,7 @@ void DesenhaCatavento()
 {
     glLineWidth(3);
     glPushMatrix();
-        defineCor(BrightGold);
-        DesenhaMastro();
+        DesenhaMastro(BrightGold);
         glPushMatrix();
             glColor3f(1,0,0); // R, G, B  [0..1]
             glTranslated(0,3,0);
@@ -192,16 +192,16 @@ void CriaInstancias()
 {
     Personagens[0].Posicao = Ponto (0,0);
     Personagens[0].Rotacao = 0;
-    Personagens[0].modelo = DesenhaCatavento;
+    Personagens[0].modelo = DesenhaMastro(Firebrick);
     Personagens[0].Escala = Ponto (1,1,1);
 
     Personagens[1].Posicao = Ponto (3,0);
     Personagens[1].Rotacao = -90;
-    Personagens[1].modelo = DesenhaCatavento;
+    Personagens[1].modelo = DesenhaMastro(LimeGreen);
     
     Personagens[2].Posicao = Ponto (0,-5);
     Personagens[2].Rotacao = 0;
-    Personagens[2].modelo = DesenhaCatavento;
+    Personagens[2].modelo = DesenhaMastro(Firebrick);
     
     nInstancias = 3;
 
@@ -348,7 +348,7 @@ void arrow_keys ( int a_keys, int x, int y )
 		case GLUT_KEY_UP:       // Se pressionar UP
 			glutFullScreen ( ); // Vai para Full Screen
 			break;
-	    case GLUT_KEY_DOWN:     // Se pressionar UP
+	    case GLUT_KEY_DOWN:     // Se pressionar DOWN
 								// Reposiciona a janela
             glutPositionWindow (50,50);
 			glutReshapeWindow ( 700, 500 );
