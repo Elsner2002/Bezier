@@ -219,8 +219,10 @@ void CarregaModelos()
 }
 void CriaCurvas()
 {
-    nCurvas = 1; //qtd curvas no topo do txt de curvas
-    Curvas[0] = Bezier(Ponto (-5,-5), Ponto (0,6), Ponto (5,-5));
+    nCurvas = CurvasBZ.getNVertices(); //qtd curvas no topo do txt de curvas
+    for(int i =0;i<nCurvas;i++){
+        Curvas[i] = Bezier(PontosCurvas.getVertice(CurvasBZ.getVertice(i).x), PontosCurvas.getVertice(CurvasBZ.getVertice(i).y), PontosCurvas.getVertice(CurvasBZ.getVertice(i).z));
+    }
 }
 // **********************************************************************
 //
