@@ -55,6 +55,9 @@ unsigned int nCurvas;
 // Limites l�gicos da �rea de desenho
 Ponto Min, Max;
 
+//lista de curvas que tem interseccao
+bool ligaCurvas[20][20];
+
 bool desenha = false;
 
 Poligono Mapa, MeiaSeta, Mastro, CurvasBZ, PontosCurvas;
@@ -191,17 +194,19 @@ void DesenhaCatavento()
 void CriaInstancias()
 {
     Personagens[0].Posicao = Ponto (0,0);
-    Personagens[0].Rotacao = 0;
+    Personagens[0].Rotacao = -90;
     Personagens[0].modelo = DesenhaMastro;
-    Personagens[0].Escala = Ponto (1,1,1);
+    Personagens[0].Escala = Ponto (0.2,0.2,0.2);
 
     Personagens[1].Posicao = Ponto (3,0);
     Personagens[1].Rotacao = -90;
     Personagens[1].modelo = DesenhaMastro;
+    Personagens[1].Escala = Ponto (0.2,0.2,0.2);
     
-    Personagens[2].Posicao = Ponto (0,-5);
-    Personagens[2].Rotacao = 0;
+    Personagens[2].Posicao = Ponto (0,0);
+    Personagens[2].Rotacao = 90;
     Personagens[2].modelo = DesenhaMastro;
+    Personagens[2].Escala = Ponto (0.2,0.2,0.2);
     
     nInstancias = 3;
 
@@ -232,12 +237,14 @@ void init()
     // Define a cor do fundo da tela (PRETO)
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+    //carrega e cria modelos
     CarregaModelos();
     CriaInstancias();
-    
     CriaCurvas();
+    encontroCurvas();
     
-    float d = 15;
+    //cria tela 5X5
+    float d = 5;
     Min = Ponto(-d,-d);
     Max = Ponto(d,d);
 }
@@ -417,4 +424,26 @@ int  main ( int argc, char** argv )
     glutMainLoop ( );
 
     return 0;
+}
+
+//cria matriz com as curvas que se encontram
+void encontroCurvas(){
+    for(int i=0; i<20;i++){
+        for(int j=0; j<20;j++){
+            if(i==j){
+                ligaCurvas[i][j]=false;
+            }
+            else{
+                if(CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).x 
+                ||CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).z 
+                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x 
+                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).z){
+                    ligaCurvas[i][j]=true;
+                }
+                else{
+                    ligaCurvas[i][j]=false;
+                }
+            }
+        }
+    }
 }
