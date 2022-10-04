@@ -58,7 +58,7 @@ Ponto Min, Max;
 //lista de curvas que tem interseccao
 bool ligaCurvas[20][20];
 
-bool desenha = false;
+bool desenha = false, mover=false;
 
 Poligono Mapa, MeiaSeta, Mastro, CurvasBZ, PontosCurvas;
 int nInstancias=0;
@@ -229,6 +229,28 @@ void CriaCurvas()
         Curvas[i] = Bezier(PontosCurvas.getVertice(CurvasBZ.getVertice(i).x), PontosCurvas.getVertice(CurvasBZ.getVertice(i).y), PontosCurvas.getVertice(CurvasBZ.getVertice(i).z));
     }
 }
+
+//cria matriz com as curvas que se encontram
+void encontroCurvas(){
+    for(int i=0; i<20;i++){
+        for(int j=0; j<20;j++){
+            if(i==j){
+                ligaCurvas[i][j]=false;
+            }
+            else{
+                if(CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).x 
+                ||CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).z 
+                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x 
+                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).z){
+                    ligaCurvas[i][j]=true;
+                }
+                else{
+                    ligaCurvas[i][j]=false;
+                }
+            }
+        }
+    }
+}
 // **********************************************************************
 //
 // **********************************************************************
@@ -335,7 +357,13 @@ void keyboard ( unsigned char key, int x, int y )
             break;
         case ' ':
             desenha = !desenha;
-        break;
+            break;
+        case 'c':
+            Personagens[1].Rotacao-=180;
+            break;
+        case 'v':
+            //mudar aqui pra parar e fazer o player andar
+            mover=!mover;
 		default:
 			break;
 	}
@@ -348,10 +376,32 @@ void arrow_keys ( int a_keys, int x, int y )
 	switch ( a_keys )
 	{
         case GLUT_KEY_LEFT:
-            Personagens[1].Posicao.x -= 0.5;
+            //diminuir 1 na proxima curva
+            do{
+                if(Personagens[1].proxCurva==0){
+                    Personagens[1].proxCurva=19;
+                }
+                else{
+                    Personagens[1].proxCurva--;
+                }
+            }while(!ligaCurvas[Personagens[1].nroDaCurva][Personagens[1].proxCurva]);
+            //pintar proxima curva
+            defineCor(Firebrick);
+            Curvas[Personagens[1].proxCurva].Traca();  
             break;
         case GLUT_KEY_RIGHT:
-            Personagens[1].Rotacao++;
+            //aumentar 1 na proxima curva 
+            do{
+                if(Personagens[1].proxCurva==19){
+                    Personagens[1].proxCurva=0;
+                }
+                else{
+                    Personagens[1].proxCurva++;
+                }
+            }while(!ligaCurvas[Personagens[1].nroDaCurva][Personagens[1].proxCurva]);
+            //pintar proxima curva
+            defineCor(Firebrick);
+            Curvas[Personagens[1].proxCurva].Traca(); 
             break;
 		case GLUT_KEY_UP:       // Se pressionar UP
 			glutFullScreen ( ); // Vai para Full Screen
@@ -424,26 +474,4 @@ int  main ( int argc, char** argv )
     glutMainLoop ( );
 
     return 0;
-}
-
-//cria matriz com as curvas que se encontram
-void encontroCurvas(){
-    for(int i=0; i<20;i++){
-        for(int j=0; j<20;j++){
-            if(i==j){
-                ligaCurvas[i][j]=false;
-            }
-            else{
-                if(CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).x 
-                ||CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).z 
-                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x 
-                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).z){
-                    ligaCurvas[i][j]=true;
-                }
-                else{
-                    ligaCurvas[i][j]=false;
-                }
-            }
-        }
-    }
 }
