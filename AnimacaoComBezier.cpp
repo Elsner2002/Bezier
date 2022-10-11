@@ -360,6 +360,12 @@ void keyboard ( unsigned char key, int x, int y )
             break;
         case 'c':
             Personagens[1].Rotacao-=180;
+            if(Personagens[1].direcao==1){
+                Personagens[1].direcao=0;
+            }
+            else{
+                Personagens[1].direcao=1;
+            }
             break;
         case 'v':
             //mudar aqui pra parar e fazer o player andar
