@@ -53,6 +53,7 @@ InstanciaBZ::InstanciaBZ()
     proxCurva = -1;
     tAtual = 0.0;
     direcao = 1;
+    Velocidade=1;
 
 }
 InstanciaBZ::InstanciaBZ(Bezier *C)
@@ -99,5 +100,8 @@ Ponto InstanciaBZ::ObtemPosicao()
 void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 {
     //cout << "AtualizaPosicao" << endl;
+    float dist=Velocidade*tempoDecorrido;
+    //ver a variavel de onde o player esta e atualizar a posição pela distancia q andou
+
 }
 
