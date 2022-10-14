@@ -56,7 +56,8 @@ unsigned int nCurvas;
 Ponto Min, Max;
 
 //lista de curvas que tem interseccao
-bool ligaCurvas[20][20];
+bool ligaCurvasX[20][20];
+bool ligaCurvasZ[20][20];
 
 bool desenha = false, mover=false;
 
@@ -193,12 +194,12 @@ void DesenhaCatavento()
 // **********************************************************************
 void CriaInstancias()
 {
-    Personagens[0].Posicao = Ponto (0,0);
+    Personagens[0].Posicao = Ponto (3,0);
     Personagens[0].Rotacao = -90;
     Personagens[0].modelo = DesenhaMastro;
     Personagens[0].Escala = Ponto (0.2,0.2,0.2);
 
-    Personagens[1].Posicao = Ponto (3,0);
+    Personagens[1].Posicao = Ponto (0,0);
     Personagens[1].Rotacao = -90;
     Personagens[1].modelo = DesenhaMastro;
     Personagens[1].Escala = Ponto (0.2,0.2,0.2);
@@ -207,7 +208,47 @@ void CriaInstancias()
     Personagens[2].Rotacao = 90;
     Personagens[2].modelo = DesenhaMastro;
     Personagens[2].Escala = Ponto (0.2,0.2,0.2);
-    
+//
+    //Personagens[3].Posicao = Ponto (0,0);
+    //Personagens[3].Rotacao = 90;
+    //Personagens[3].modelo = DesenhaMastro;
+    //Personagens[3].Escala = Ponto (0.2,0.2,0.2);
+//
+    //Personagens[4].Posicao = Ponto (0,0);
+    //Personagens[4].Rotacao = 90;
+    //Personagens[4].modelo = DesenhaMastro;
+    //Personagens[4].Escala = Ponto (0.2,0.2,0.2);
+//
+    //Personagens[5].Posicao = Ponto (0,0);
+    //Personagens[5].Rotacao = 90;
+    //Personagens[5].modelo = DesenhaMastro;
+    //Personagens[5].Escala = Ponto (0.2,0.2,0.2);
+//
+    //Personagens[6].Posicao = Ponto (0,0);
+    //Personagens[6].Rotacao = 90;
+    //Personagens[6].modelo = DesenhaMastro;
+    //Personagens[6].Escala = Ponto (0.2,0.2,0.2);
+//
+    //Personagens[7].Posicao = Ponto (0,0);
+    //Personagens[7].Rotacao = 90;
+    //Personagens[7].modelo = DesenhaMastro;
+    //Personagens[7].Escala = Ponto (0.2,0.2,0.2);
+//
+    //Personagens[8].Posicao = Ponto (0,0);
+    //Personagens[8].Rotacao = 90;
+    //Personagens[8].modelo = DesenhaMastro;
+    //Personagens[8].Escala = Ponto (0.2,0.2,0.2);
+//
+    //Personagens[9].Posicao = Ponto (0,0);
+    //Personagens[9].Rotacao = 90;
+    //Personagens[9].modelo = DesenhaMastro;
+    //Personagens[9].Escala = Ponto (0.2,0.2,0.2);
+//
+    //Personagens[10].Posicao = Ponto (0,0);
+    //Personagens[10].Rotacao = 90;
+    //Personagens[10].modelo = DesenhaMastro;
+    //Personagens[10].Escala = Ponto (0.2,0.2,0.2);
+    //
     nInstancias = 3;
 
 }
@@ -235,17 +276,23 @@ void encontroCurvas(){
     for(int i=0; i<20;i++){
         for(int j=0; j<20;j++){
             if(i==j){
-                ligaCurvas[i][j]=false;
+                ligaCurvasX[i][j]=false;
+                ligaCurvasZ[i][j]=false;
             }
             else{
                 if(CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).x 
-                ||CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).z 
-                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x 
-                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).z){
-                    ligaCurvas[i][j]=true;
+                ||CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).z){
+                    ligaCurvasX[i][j]=true;
                 }
                 else{
-                    ligaCurvas[i][j]=false;
+                    ligaCurvasX[i][j]=false;
+                }
+                if(CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x 
+                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).z){
+                    ligaCurvasZ[i][j]=true;
+                }
+                else{
+                    ligaCurvasZ[i][j]=false;
                 }
             }
         }
@@ -359,12 +406,12 @@ void keyboard ( unsigned char key, int x, int y )
             desenha = !desenha;
             break;
         case 'c':
-            Personagens[1].Rotacao-=180;
-            if(Personagens[1].direcao==1){
-                Personagens[1].direcao=0;
+            Personagens[0].Rotacao-=180;
+            if(Personagens[0].direcao==1){
+                Personagens[0].direcao=0;
             }
             else{
-                Personagens[1].direcao=1;
+                Personagens[0].direcao=1;
             }
             break;
         case 'v':
@@ -383,31 +430,31 @@ void arrow_keys ( int a_keys, int x, int y )
 	{
         case GLUT_KEY_LEFT:
             //diminuir 1 na proxima curva
-            do{
-                if(Personagens[1].proxCurva==0){
-                    Personagens[1].proxCurva=19;
-                }
-                else{
-                    Personagens[1].proxCurva--;
-                }
-            }while(!ligaCurvas[Personagens[1].nroDaCurva][Personagens[1].proxCurva]);
+            //do{
+            //    if(Personagens[0].proxCurva==0){
+            //        Personagens[0].proxCurva=19;
+            //    }
+            //    else{
+            //        Personagens[0].proxCurva--;
+            //    }
+            //}while(!ligaCurvas[Personagens[0].nroDaCurva][Personagens[0].proxCurva]);
             //pintar proxima curva
             defineCor(Firebrick);
-            Curvas[Personagens[1].proxCurva].Traca();  
+            Curvas[Personagens[0].proxCurva].Traca();  
             break;
         case GLUT_KEY_RIGHT:
             //aumentar 1 na proxima curva 
-            do{
-                if(Personagens[1].proxCurva==19){
-                    Personagens[1].proxCurva=0;
-                }
-                else{
-                    Personagens[1].proxCurva++;
-                }
-            }while(!ligaCurvas[Personagens[1].nroDaCurva][Personagens[1].proxCurva]);
+            //do{
+            //    if(Personagens[0].proxCurva==19){
+            //        Personagens[0].proxCurva=0;
+            //    }
+            //    else{
+            //        Personagens[0].proxCurva++;
+            //    }
+            //}while(!ligaCurvas[Personagens[0].nroDaCurva][Personagens[0].proxCurva]);
             //pintar proxima curva
             defineCor(Firebrick);
-            Curvas[Personagens[1].proxCurva].Traca(); 
+            Curvas[Personagens[0].proxCurva].Traca(); 
             break;
 		case GLUT_KEY_UP:       // Se pressionar UP
 			glutFullScreen ( ); // Vai para Full Screen
