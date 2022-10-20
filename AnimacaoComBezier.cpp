@@ -47,7 +47,7 @@ Temporizador T;
 double AccumDeltaT=0;
 Temporizador T2;
 
-InstanciaBZ Personagens[10];
+InstanciaBZ Personagens[11];
 
 Bezier Curvas[26];
 unsigned int nCurvas;
@@ -267,8 +267,8 @@ void init()
     CriaCurvas();
     encontroCurvas();
     
-    //cria tela 8X8
-    float d = 8;
+    //cria tela 9X9
+    float d = 9;
     Min = Ponto(-d,-d);
     Max = Ponto(d,d);
 }
