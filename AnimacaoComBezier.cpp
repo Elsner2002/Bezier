@@ -49,15 +49,15 @@ Temporizador T2;
 
 InstanciaBZ Personagens[10];
 
-Bezier Curvas[20];
+Bezier Curvas[26];
 unsigned int nCurvas;
 
 // Limites l�gicos da �rea de desenho
 Ponto Min, Max;
 
 //lista de curvas que tem interseccao
-bool ligaCurvasX[20][20];
-bool ligaCurvasZ[20][20];
+bool ligaCurvasX[26][26];
+bool ligaCurvasZ[26][26];
 
 bool desenha = false, mover=false;
 
@@ -133,9 +133,15 @@ void DesenhaEixos()
 }
 
 // **********************************************************************
-void DesenhaMastro()
+void DesenhaPlayer()
 {   
-    defineCor(LimeGreen);
+    defineCor(LimeGreen);    
+    Mastro.desenhaPoligono();
+}
+
+void DesenhaInimigo()
+{   
+    defineCor(Firebrick);    
     Mastro.desenhaPoligono();
 }
 // **********************************************************************
@@ -145,60 +151,60 @@ void CriaInstancias()
 {
     Personagens[0].Posicao = Ponto (3,0);
     Personagens[0].Rotacao = -90;
-    Personagens[0].modelo = DesenhaMastro;
+    Personagens[0].modelo = DesenhaPlayer;
     Personagens[0].Escala = Ponto (0.2,0.2,0.2);
 
     Personagens[1].Posicao = Ponto (0,0);
     Personagens[1].Rotacao = -90;
-    Personagens[1].modelo = DesenhaMastro;
+    Personagens[1].modelo = DesenhaInimigo;
     Personagens[1].Escala = Ponto (0.2,0.2,0.2);
     
     Personagens[2].Posicao = Ponto (0,0);
     Personagens[2].Rotacao = 90;
-    Personagens[2].modelo = DesenhaMastro;
+    Personagens[2].modelo = DesenhaInimigo;
     Personagens[2].Escala = Ponto (0.2,0.2,0.2);
-//
-    //Personagens[3].Posicao = Ponto (0,0);
-    //Personagens[3].Rotacao = 90;
-    //Personagens[3].modelo = DesenhaMastro;
-    //Personagens[3].Escala = Ponto (0.2,0.2,0.2);
-//
-    //Personagens[4].Posicao = Ponto (0,0);
-    //Personagens[4].Rotacao = 90;
-    //Personagens[4].modelo = DesenhaMastro;
-    //Personagens[4].Escala = Ponto (0.2,0.2,0.2);
-//
-    //Personagens[5].Posicao = Ponto (0,0);
-    //Personagens[5].Rotacao = 90;
-    //Personagens[5].modelo = DesenhaMastro;
-    //Personagens[5].Escala = Ponto (0.2,0.2,0.2);
-//
-    //Personagens[6].Posicao = Ponto (0,0);
-    //Personagens[6].Rotacao = 90;
-    //Personagens[6].modelo = DesenhaMastro;
-    //Personagens[6].Escala = Ponto (0.2,0.2,0.2);
-//
-    //Personagens[7].Posicao = Ponto (0,0);
-    //Personagens[7].Rotacao = 90;
-    //Personagens[7].modelo = DesenhaMastro;
-    //Personagens[7].Escala = Ponto (0.2,0.2,0.2);
-//
-    //Personagens[8].Posicao = Ponto (0,0);
-    //Personagens[8].Rotacao = 90;
-    //Personagens[8].modelo = DesenhaMastro;
-    //Personagens[8].Escala = Ponto (0.2,0.2,0.2);
-//
-    //Personagens[9].Posicao = Ponto (0,0);
-    //Personagens[9].Rotacao = 90;
-    //Personagens[9].modelo = DesenhaMastro;
-    //Personagens[9].Escala = Ponto (0.2,0.2,0.2);
-//
-    //Personagens[10].Posicao = Ponto (0,0);
-    //Personagens[10].Rotacao = 90;
-    //Personagens[10].modelo = DesenhaMastro;
-    //Personagens[10].Escala = Ponto (0.2,0.2,0.2);
-    //
-    nInstancias = 3;
+
+    Personagens[3].Posicao = Ponto (4,0);
+    Personagens[3].Rotacao = 90;
+    Personagens[3].modelo = DesenhaInimigo;
+    Personagens[3].Escala = Ponto (0.2,0.2,0.2);
+
+    Personagens[4].Posicao = Ponto (4,0);
+    Personagens[4].Rotacao = -90;
+    Personagens[4].modelo = DesenhaInimigo;
+    Personagens[4].Escala = Ponto (0.2,0.2,0.2);
+
+    Personagens[5].Posicao = Ponto (-4,0);
+    Personagens[5].Rotacao = 90;
+    Personagens[5].modelo = DesenhaInimigo;
+    Personagens[5].Escala = Ponto (0.2,0.2,0.2);
+
+    Personagens[6].Posicao = Ponto (-4,0);
+    Personagens[6].Rotacao = -90;
+    Personagens[6].modelo = DesenhaInimigo;
+    Personagens[6].Escala = Ponto (0.2,0.2,0.2);
+
+    Personagens[7].Posicao = Ponto (8,0);
+    Personagens[7].Rotacao = 90;
+    Personagens[7].modelo = DesenhaInimigo;
+    Personagens[7].Escala = Ponto (0.2,0.2,0.2);
+
+    Personagens[8].Posicao = Ponto (8,0);
+    Personagens[8].Rotacao = -90;
+    Personagens[8].modelo = DesenhaInimigo;
+    Personagens[8].Escala = Ponto (0.2,0.2,0.2);
+
+    Personagens[9].Posicao = Ponto (-8,0);
+    Personagens[9].Rotacao = 90;
+    Personagens[9].modelo = DesenhaInimigo;
+    Personagens[9].Escala = Ponto (0.2,0.2,0.2);
+
+    Personagens[10].Posicao = Ponto (-8,0);
+    Personagens[10].Rotacao = -90;
+    Personagens[10].modelo = DesenhaInimigo;
+    Personagens[10].Escala = Ponto (0.2,0.2,0.2);
+    
+    nInstancias = 11;
 
 }
 // **********************************************************************
@@ -222,8 +228,8 @@ void CriaCurvas()
 
 //cria matriz com as curvas que se encontram
 void encontroCurvas(){
-    for(int i=0; i<20;i++){
-        for(int j=0; j<20;j++){
+    for(int i=0; i<26;i++){
+        for(int j=0; j<26;j++){
             if(i==j){
                 ligaCurvasX[i][j]=false;
                 ligaCurvasZ[i][j]=false;
@@ -261,8 +267,8 @@ void init()
     CriaCurvas();
     encontroCurvas();
     
-    //cria tela 5X5
-    float d = 5;
+    //cria tela 8X8
+    float d = 8;
     Min = Ponto(-d,-d);
     Max = Ponto(d,d);
 }
@@ -284,7 +290,7 @@ void DesenhaCurvas()
 {
     for(int i=0; i<nCurvas;i++)
     {
-        defineCor(Gray);
+        defineCor(Gold);
         Curvas[i].Traca();
     }
 }
