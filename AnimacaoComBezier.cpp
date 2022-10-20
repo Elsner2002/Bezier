@@ -133,61 +133,10 @@ void DesenhaEixos()
 }
 
 // **********************************************************************
-void DesenhaSeta()
-{
-    glPushMatrix();
-        MeiaSeta.desenhaPoligono();
-        glScaled(1,-1, 1);
-        MeiaSeta.desenhaPoligono();
-    glPopMatrix();
-}
-// **********************************************************************
-void DesenhaApontador()
-{
-    glPushMatrix();
-        glTranslated(-4, 0, 0);
-        DesenhaSeta();
-    glPopMatrix();
-}
-// **********************************************************************
-void DesenhaHelice()
-{
-    glPushMatrix();
-    for(int i=0;i < 4; i++)
-    {
-        glRotatef(90, 0, 0, 1);
-        DesenhaApontador();
-    }
-    glPopMatrix();
-}
-// **********************************************************************
-void DesenhaHelicesGirando()
-{
-    glPushMatrix();
-        glRotatef(angulo, 0, 0, 1);
-        DesenhaHelice();
-   glPopMatrix();
-}
-// **********************************************************************
 void DesenhaMastro()
 {   
     defineCor(LimeGreen);
     Mastro.desenhaPoligono();
-}
-// **********************************************************************
-void DesenhaCatavento()
-{
-    glLineWidth(3);
-    glPushMatrix();
-        DesenhaMastro();
-        glPushMatrix();
-            glColor3f(1,0,0); // R, G, B  [0..1]
-            glTranslated(0,3,0);
-            glScaled(0.2, 0.2, 1);
-            defineCor(YellowGreen);
-            DesenhaHelicesGirando();
-        glPopMatrix();
-    glPopMatrix();
 }
 // **********************************************************************
 // Esta fun��o deve instanciar todos os personagens do cen�rio
