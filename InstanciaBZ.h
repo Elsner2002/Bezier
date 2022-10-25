@@ -22,7 +22,7 @@ class InstanciaBZ{
 public:
     InstanciaBZ();
     InstanciaBZ(Bezier *Curva);
-    
+
     TipoFuncao *modelo; // Modelo
 
     Bezier *Curva; // referencia para a curva onde esta' a instancia
@@ -31,6 +31,7 @@ public:
 
     int nroDaCurva;
     int proxCurva;
+	bool indoParaZ;
     int cor;
     float Velocidade;
     float tAtual;

@@ -13,6 +13,7 @@
 // Selecione a pasta onde voce descompactou o ZIP que continha este arquivo.
 //
 
+#include <cstdlib>
 #include <iostream>
 #include <cmath>
 #include <ctime>
@@ -134,14 +135,14 @@ void DesenhaEixos()
 
 // **********************************************************************
 void DesenhaPlayer()
-{   
-    defineCor(LimeGreen);    
+{
+    defineCor(LimeGreen);
     Mastro.desenhaPoligono();
 }
 
 void DesenhaInimigo()
-{   
-    defineCor(Firebrick);    
+{
+    defineCor(Firebrick);
     Mastro.desenhaPoligono();
 }
 // **********************************************************************
@@ -150,61 +151,20 @@ void DesenhaInimigo()
 void CriaInstancias()
 {
     Personagens[0].Posicao = Ponto (3,0);
-    Personagens[0].Rotacao = -90;
     Personagens[0].modelo = DesenhaPlayer;
-    Personagens[0].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[1].Posicao = Ponto (0,0);
-    Personagens[1].Rotacao = -90;
-    Personagens[1].modelo = DesenhaInimigo;
-    Personagens[1].Escala = Ponto (0.2,0.2,0.2);
-    
-    Personagens[2].Posicao = Ponto (0,0);
-    Personagens[2].Rotacao = 90;
-    Personagens[2].modelo = DesenhaInimigo;
-    Personagens[2].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[3].Posicao = Ponto (4,0);
-    Personagens[3].Rotacao = 90;
-    Personagens[3].modelo = DesenhaInimigo;
-    Personagens[3].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[4].Posicao = Ponto (4,0);
-    Personagens[4].Rotacao = -90;
-    Personagens[4].modelo = DesenhaInimigo;
-    Personagens[4].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[5].Posicao = Ponto (-4,0);
-    Personagens[5].Rotacao = 90;
-    Personagens[5].modelo = DesenhaInimigo;
-    Personagens[5].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[6].Posicao = Ponto (-4,0);
-    Personagens[6].Rotacao = -90;
-    Personagens[6].modelo = DesenhaInimigo;
-    Personagens[6].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[7].Posicao = Ponto (8,0);
-    Personagens[7].Rotacao = 90;
-    Personagens[7].modelo = DesenhaInimigo;
-    Personagens[7].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[8].Posicao = Ponto (8,0);
-    Personagens[8].Rotacao = -90;
-    Personagens[8].modelo = DesenhaInimigo;
-    Personagens[8].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[9].Posicao = Ponto (-8,0);
-    Personagens[9].Rotacao = 90;
-    Personagens[9].modelo = DesenhaInimigo;
-    Personagens[9].Escala = Ponto (0.2,0.2,0.2);
-
-    Personagens[10].Posicao = Ponto (-8,0);
-    Personagens[10].Rotacao = -90;
-    Personagens[10].modelo = DesenhaInimigo;
-    Personagens[10].Escala = Ponto (0.2,0.2,0.2);
-    
+    Personagens[0].indoParaZ = true;
+    Personagens[0].Escala = Ponto (0.4,0.4,0.4);
+	Personagens[0].Curva = &Curvas[0];
     nInstancias = 11;
+
+	for (size_t i = 1; i < nInstancias; i++) {
+		Personagens[i].Posicao = Ponto (0,0);
+		Personagens[i].modelo = DesenhaInimigo;
+		Personagens[i].indoParaZ = true;
+		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
+		Personagens[i].Curva = &Curvas[i];
+	}
+
 
 }
 // **********************************************************************
@@ -214,7 +174,7 @@ void CarregaModelos()
 {
     Mapa.LePoligono("EstadoRS.txt");
     MeiaSeta.LePoligono("MeiaSeta.txt");
-    Mastro.LePoligono("Mastro.txt");
+    Mastro.LePoligono("Triangulo.txt");
     PontosCurvas.LePoligono("cordPontos.txt");
     CurvasBZ.LePoligonoZ("ListaCurvas.txt");
 }
@@ -235,14 +195,14 @@ void encontroCurvas(){
                 ligaCurvasZ[i][j]=false;
             }
             else{
-                if(CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).x 
+                if(CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).x
                 ||CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).z){
                     ligaCurvasX[i][j]=true;
                 }
                 else{
                     ligaCurvasX[i][j]=false;
                 }
-                if(CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x 
+                if(CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x
                 ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).z){
                     ligaCurvasZ[i][j]=true;
                 }
@@ -266,11 +226,11 @@ void init()
     CriaInstancias();
     CriaCurvas();
     encontroCurvas();
-    
+
     //cria tela 9X9
     float d = 9;
-    Min = Ponto(-d,-d);
-    Max = Ponto(d,d);
+    Min = Ponto(-d,-d/2);
+    Max = Ponto(d,d/2);
 }
 
 // **********************************************************************
@@ -280,6 +240,31 @@ void DesenhaPersonagens(float tempoDecorrido)
     for(int i=0; i<nInstancias;i++)
     {
         Personagens[i].AtualizaPosicao(tempoDecorrido);
+
+		if (Personagens[i].proxCurva) {
+			if (Personagens[i].tAtual >= 0.5) {
+				std::vector<int> curvasPossiveis;
+
+				if (Personagens[i].indoParaZ) {
+					for (size_t j = 0; j < nCurvas; j++) {
+						if (ligaCurvasZ[Personagens[i].nroDaCurva][j]) {
+							curvasPossiveis.push_back(j);
+						}
+					}
+				} else {
+					for (size_t j = 0; j < nCurvas; j++) {
+						if (ligaCurvasX[Personagens[i].nroDaCurva][j]) {
+							curvasPossiveis.push_back(j);
+						}
+					}
+				}
+
+				Personagens[i].proxCurva = curvasPossiveis[rand() % curvasPossiveis.size()];
+			} else if (Personagens[i].tAtual == 0) {
+				Personagens[i].Curva = &Curvas[Personagens[i].nroDaCurva];
+			}
+		}
+
         Personagens[i].desenha();
     }
 }
@@ -313,7 +298,7 @@ void display( void )
 
 	glLineWidth(1);
 	glColor3f(1,1,1); // R, G, B  [0..1]
-    
+
     DesenhaEixos();
 
     DesenhaPersonagens(T2.getDeltaT());
@@ -358,15 +343,31 @@ void keyboard ( unsigned char key, int x, int y )
             ContaTempo(3);
             break;
         case ' ':
-            desenha = !desenha;
+			if (Personagens[0].Velocidade == 0) {
+				if (Personagens[0].direcao == 1) {
+					Personagens[0].Velocidade = 1.0;
+				} else {
+					Personagens[0].Velocidade = -1.0;
+				}
+			} else {
+				Personagens[0].Velocidade = 0;
+			}
             break;
         case 'c':
             Personagens[0].Rotacao-=180;
             if(Personagens[0].direcao==1){
                 Personagens[0].direcao=0;
+
+				if (Personagens[0].Velocidade != 0) {
+					Personagens[0].Velocidade = -1.0;
+				}
             }
             else{
                 Personagens[0].direcao=1;
+
+				if (Personagens[0].Velocidade != 0) {
+					Personagens[0].Velocidade = 1.0;
+				}
             }
             break;
         case 'v':
@@ -395,10 +396,10 @@ void arrow_keys ( int a_keys, int x, int y )
             //}while(!ligaCurvas[Personagens[0].nroDaCurva][Personagens[0].proxCurva]);
             //pintar proxima curva
             defineCor(Firebrick);
-            Curvas[Personagens[0].proxCurva].Traca();  
+            Curvas[Personagens[0].proxCurva].Traca();
             break;
         case GLUT_KEY_RIGHT:
-            //aumentar 1 na proxima curva 
+            //aumentar 1 na proxima curva
             //do{
             //    if(Personagens[0].proxCurva==19){
             //        Personagens[0].proxCurva=0;
@@ -409,7 +410,7 @@ void arrow_keys ( int a_keys, int x, int y )
             //}while(!ligaCurvas[Personagens[0].nroDaCurva][Personagens[0].proxCurva]);
             //pintar proxima curva
             defineCor(Firebrick);
-            Curvas[Personagens[0].proxCurva].Traca(); 
+            Curvas[Personagens[0].proxCurva].Traca();
             break;
 		case GLUT_KEY_UP:       // Se pressionar UP
 			glutFullScreen ( ); // Vai para Full Screen

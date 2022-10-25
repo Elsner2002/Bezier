@@ -1,9 +1,10 @@
 //
 //  Bezier.cpp
 //  OpenGL
-// 
+//
 
 #include "Bezier.h"
+#include <iostream>
 
 // **********************************************************************
 Bezier::Bezier()
@@ -22,9 +23,9 @@ void Bezier::calculaComprimentoDaCurva()
     double DeltaT = 1.0/50;
     double t=DeltaT;
     Ponto P1, P2;
-    
+
     ComprimentoTotalDaCurva = 0;
-    
+
     P1 = Calcula(0.0);
     while(t<1.0)
     {
@@ -36,7 +37,7 @@ void Bezier::calculaComprimentoDaCurva()
     P2 = Calcula(1.0); // faz o fechamento da curva
     ComprimentoTotalDaCurva += calculaDistancia(P1,P2);
     cout << "ComprimentoTotalDaCurva: " << ComprimentoTotalDaCurva << endl;
-    
+
 }
 // **********************************************************************
 Bezier::Bezier(Ponto P0, Ponto P1, Ponto P2)
@@ -62,7 +63,7 @@ Ponto Bezier::Calcula(double t)
 {
     Ponto P;
     double UmMenosT = 1-t;
-    
+
     P =  Coords[0] * UmMenosT * UmMenosT + Coords[1] * 2 * UmMenosT * t + Coords[2] * t*t;
     return P;
 }
@@ -88,7 +89,7 @@ void Bezier::Traca()
     Ponto P;
     //cout << "DeltaT: " << DeltaT << endl;
     glBegin(GL_LINE_STRIP);
-    
+
     while(t<1.0)
     {
         P = Calcula(t);
