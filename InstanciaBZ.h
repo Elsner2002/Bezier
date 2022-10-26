@@ -36,6 +36,9 @@ public:
     float Velocidade;
     float tAtual;
     int direcao; // andando do fim para o inicio, ou ao contrario
+    vector<int> curvasLigadas;
+    bool listaCurvasPos;
+    int curvaListaCurvas;
 
     void desenha();
     void AtualizaPosicao(float tempoDecorrido);
