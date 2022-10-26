@@ -258,10 +258,16 @@ void DesenhaPersonagens(float tempoDecorrido)
 						}
 					}
 				}
-
-				Personagens[i].proxCurva = curvasPossiveis[rand() % curvasPossiveis.size()];
+                Personagens[i].curvaListaCurvas=rand() % curvasPossiveis.size();
+				Personagens[i].proxCurva = curvasPossiveis[Personagens[i].curvaListaCurvas];
+                if(!Personagens[i].listaCurvasPos){
+                    Personagens[i].curvasLigadas =curvasPossiveis;
+                    Personagens[i].listaCurvasPos=true;
+                }
 			} else if (Personagens[i].tAtual == 0) {
 				Personagens[i].Curva = &Curvas[Personagens[i].nroDaCurva];
+                Personagens[i].curvasPossiveis = NULL;
+                Personagens[i].listaCurvasPos=false;
 			}
 		}
 
@@ -370,9 +376,6 @@ void keyboard ( unsigned char key, int x, int y )
 				}
             }
             break;
-        case 'v':
-            //mudar aqui pra parar e fazer o player andar
-            mover=!mover;
 		default:
 			break;
 	}
@@ -386,31 +389,33 @@ void arrow_keys ( int a_keys, int x, int y )
 	{
         case GLUT_KEY_LEFT:
             //diminuir 1 na proxima curva
-            //do{
-            //    if(Personagens[0].proxCurva==0){
-            //        Personagens[0].proxCurva=19;
-            //    }
-            //    else{
-            //        Personagens[0].proxCurva--;
-            //    }
-            //}while(!ligaCurvas[Personagens[0].nroDaCurva][Personagens[0].proxCurva]);
-            //pintar proxima curva
-            defineCor(Firebrick);
-            Curvas[Personagens[0].proxCurva].Traca();
+            if(listaCurvasPos){
+                if(Personagens[0].curvaListaCurvas+1==Personagens[0].curvasLigadas.size){
+                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[0];
+                }
+                else{
+                    Personagens[0].curvaListaCurvas++;
+                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
+                    }
+                    //ver como pintar proxima curva
+                    defineCor(Firebrick);
+                    Curvas[Personagens[0].proxCurva].Traca();
+            }
             break;
         case GLUT_KEY_RIGHT:
             //aumentar 1 na proxima curva
-            //do{
-            //    if(Personagens[0].proxCurva==19){
-            //        Personagens[0].proxCurva=0;
-            //    }
-            //    else{
-            //        Personagens[0].proxCurva++;
-            //    }
-            //}while(!ligaCurvas[Personagens[0].nroDaCurva][Personagens[0].proxCurva]);
-            //pintar proxima curva
-            defineCor(Firebrick);
-            Curvas[Personagens[0].proxCurva].Traca();
+            if(listaCurvasPos){
+                if(Personagens[0].curvaListaCurvas==0){
+                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvasLigadas.size-1];
+                }
+                else{
+                    Personagens[0].curvaListaCurvas--;
+                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
+                    }
+                //ver como pintar proxima curva
+                defineCor(Firebrick);
+                Curvas[Personagens[0].proxCurva].Traca();
+            }
             break;
 		case GLUT_KEY_UP:       // Se pressionar UP
 			glutFullScreen ( ); // Vai para Full Screen
