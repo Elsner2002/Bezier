@@ -142,7 +142,7 @@ void DesenhaPlayer()
 
 void DesenhaInimigo()
 {
-    defineCor(Firebrick);
+    defineCor(rand() % 100);
     Mastro.desenhaPoligono();
 }
 // **********************************************************************
@@ -267,7 +267,8 @@ void DesenhaPersonagens(float tempoDecorrido)
                 }
 			} else if (Personagens[i].tAtual == 0) {
 				Personagens[i].Curva = &Curvas[Personagens[i].nroDaCurva];
-                Personagens[i].curvasLigadas = NULL;
+                std::vector<int> vazio;
+                Personagens[i].curvasLigadas = vazio;
                 Personagens[i].listaCurvasPos=false;
                 Personagens[i].proxCurva=-1;
 			}
@@ -364,28 +365,28 @@ void keyboard ( unsigned char key, int x, int y )
         case 'c':
             Personagens[0].Rotacao-=180;
             Personagens[0].indoParaZ=!Personagens[0].indoParaZ;
-            if (Personagens[i].tAtual >= 0.5) {
+            if (Personagens[0].tAtual >= 0.5) {
                 //lista das curvas possíveis
 				std::vector<int> curvasPossiveis;
 
-				if (Personagens[i].indoParaZ) {
+				if (Personagens[0].indoParaZ) {
 					for (size_t j = 0; j < nCurvas; j++) {
-						if (ligaCurvasZ[Personagens[i].nroDaCurva][j]) {
+						if (ligaCurvasZ[Personagens[0].nroDaCurva][j]) {
 							curvasPossiveis.push_back(j);
 						}
 					}
 				} else {
 					for (size_t j = 0; j < nCurvas; j++) {
-						if (ligaCurvasX[Personagens[i].nroDaCurva][j]) {
+						if (ligaCurvasX[Personagens[0].nroDaCurva][j]) {
 							curvasPossiveis.push_back(j);
 						}
 					}
 				}
-                Personagens[i].curvaListaCurvas=rand() % curvasPossiveis.size();
-				Personagens[i].proxCurva = curvasPossiveis[Personagens[i].curvaListaCurvas];
-                if(!Personagens[i].listaCurvasPos){
-                    Personagens[i].curvasLigadas =curvasPossiveis;
-                    Personagens[i].listaCurvasPos=true;
+                Personagens[0].curvaListaCurvas=rand() % curvasPossiveis.size();
+				Personagens[0].proxCurva = curvasPossiveis[Personagens[0].curvaListaCurvas];
+                if(!Personagens[0].listaCurvasPos){
+                    Personagens[0].curvasLigadas =curvasPossiveis;
+                    Personagens[0].listaCurvasPos=true;
                 }
 			}
             if(Personagens[0].direcao==1){
@@ -416,8 +417,8 @@ void arrow_keys ( int a_keys, int x, int y )
 	{
         case GLUT_KEY_LEFT:
             //diminuir 1 na proxima curva
-            if(listaCurvasPos){
-                if(Personagens[0].curvaListaCurvas+1==Personagens[0].curvasLigadas.size){
+            if(Personagens[0].listaCurvasPos){
+                if(Personagens[0].curvaListaCurvas+1==Personagens[0].curvasLigadas.size()){
                     Personagens[0].proxCurva=Personagens[0].curvasLigadas[0];
                 }
                 else{
@@ -431,9 +432,9 @@ void arrow_keys ( int a_keys, int x, int y )
             break;
         case GLUT_KEY_RIGHT:
             //aumentar 1 na proxima curva
-            if(listaCurvasPos){
+            if(Personagens[0].listaCurvasPos){
                 if(Personagens[0].curvaListaCurvas==0){
-                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvasLigadas.size-1];
+                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvasLigadas.size()-1];
                 }
                 else{
                     Personagens[0].curvaListaCurvas--;
