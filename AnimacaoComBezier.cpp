@@ -241,8 +241,9 @@ void DesenhaPersonagens(float tempoDecorrido)
     {
         Personagens[i].AtualizaPosicao(tempoDecorrido);
 
-		if (Personagens[i].proxCurva) {
+		if (Personagens[i].proxCurva<0) {
 			if (Personagens[i].tAtual >= 0.5) {
+                //lista das curvas possíveis
 				std::vector<int> curvasPossiveis;
 
 				if (Personagens[i].indoParaZ) {
@@ -266,8 +267,9 @@ void DesenhaPersonagens(float tempoDecorrido)
                 }
 			} else if (Personagens[i].tAtual == 0) {
 				Personagens[i].Curva = &Curvas[Personagens[i].nroDaCurva];
-                Personagens[i].curvasPossiveis = NULL;
+                Personagens[i].curvasLigadas = NULL;
                 Personagens[i].listaCurvasPos=false;
+                Personagens[i].proxCurva=-1;
 			}
 		}
 
@@ -361,6 +363,31 @@ void keyboard ( unsigned char key, int x, int y )
             break;
         case 'c':
             Personagens[0].Rotacao-=180;
+            Personagens[0].indoParaZ=!Personagens[0].indoParaZ;
+            if (Personagens[i].tAtual >= 0.5) {
+                //lista das curvas possíveis
+				std::vector<int> curvasPossiveis;
+
+				if (Personagens[i].indoParaZ) {
+					for (size_t j = 0; j < nCurvas; j++) {
+						if (ligaCurvasZ[Personagens[i].nroDaCurva][j]) {
+							curvasPossiveis.push_back(j);
+						}
+					}
+				} else {
+					for (size_t j = 0; j < nCurvas; j++) {
+						if (ligaCurvasX[Personagens[i].nroDaCurva][j]) {
+							curvasPossiveis.push_back(j);
+						}
+					}
+				}
+                Personagens[i].curvaListaCurvas=rand() % curvasPossiveis.size();
+				Personagens[i].proxCurva = curvasPossiveis[Personagens[i].curvaListaCurvas];
+                if(!Personagens[i].listaCurvasPos){
+                    Personagens[i].curvasLigadas =curvasPossiveis;
+                    Personagens[i].listaCurvasPos=true;
+                }
+			}
             if(Personagens[0].direcao==1){
                 Personagens[0].direcao=0;
 
