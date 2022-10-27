@@ -134,22 +134,18 @@ void DesenhaEixos()
 }
 
 // **********************************************************************
-void DesenhaPlayer()
+void DesenhaInstancia()
 {
     Mastro.desenhaPoligono();
 }
 
-void DesenhaInimigo()
-{
-    Mastro.desenhaPoligono();
-}
 // **********************************************************************
 // Esta fun��o deve instanciar todos os personagens do cen�rio
 // **********************************************************************
 void CriaInstancias()
 {
     Personagens[0].Posicao = Ponto (3,0);
-    Personagens[0].modelo = DesenhaPlayer;
+    Personagens[0].modelo = DesenhaInstancia;
     Personagens[0].cor= LimeGreen;
     Personagens[0].indoParaZ = true;
     Personagens[0].Escala = Ponto (0.4,0.4,0.4);
@@ -172,7 +168,7 @@ void CriaInstancias()
             }
 
         }while(existe);
-		Personagens[i].modelo = DesenhaInimigo;
+		Personagens[i].modelo = DesenhaInstancia;
 		Personagens[i].indoParaZ = true;
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
 		Personagens[i].Curva = &Curvas[i];
@@ -297,10 +293,12 @@ void DesenhaPersonagens(float tempoDecorrido)
                 std::vector<int> vazio;
                 Personagens[i].curvasLigadas = vazio;
                 Personagens[i].listaCurvasPos=false;
+                glLineWidth(0);
+                Curvas[Personagens[0].proxCurva].Traca();
+                glLineWidth(0);
                 Personagens[i].proxCurva=-1;
 			}
 		}
-
         Personagens[i].desenha();
     }
 }
@@ -312,6 +310,11 @@ void DesenhaCurvas()
     for(int i=0; i<nCurvas;i++)
     {
         Curvas[i].Traca();
+    }
+    if(Personagens[0].proxCurva>=0){
+        glLineWidth(4.0);
+        Curvas[Personagens[0].proxCurva].Traca();
+        glLineWidth(0);
     }
 }
 // **********************************************************************
@@ -390,6 +393,8 @@ void keyboard ( unsigned char key, int x, int y )
             break;
         case 'c':
             Personagens[0].Rotacao-=180;
+            //TODO: ver com o Bernardo quando o metodo AtualizaIndoParaZestiver pronto
+            //ver o q faz e como funciona para talvez mudar aqui 
             Personagens[0].indoParaZ=!Personagens[0].indoParaZ;
             if (Personagens[0].tAtual >= 0.5) {
                 //lista das curvas possíveis
@@ -415,6 +420,7 @@ void keyboard ( unsigned char key, int x, int y )
                     Personagens[0].listaCurvasPos=true;
                 }
 			}
+            //TODO: ate aqui
             if(Personagens[0].direcao==1){
                 Personagens[0].direcao=0;
 
@@ -443,32 +449,28 @@ void arrow_keys ( int a_keys, int x, int y )
 	{
         case GLUT_KEY_LEFT:
             //diminuir 1 na proxima curva
-            if(Personagens[0].listaCurvasPos){
+            if(Personagens[0].proxCurva>=0){
+                
                 if(Personagens[0].curvaListaCurvas+1==Personagens[0].curvasLigadas.size()){
-                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[0];
+                    Personagens[0].curvaListaCurvas=0;
                 }
                 else{
                     Personagens[0].curvaListaCurvas++;
-                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
                     }
-                    //ver como pintar proxima curva
-                    defineCor(Firebrick);
-                    Curvas[Personagens[0].proxCurva].Traca();
+                Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
+                
             }
             break;
         case GLUT_KEY_RIGHT:
             //aumentar 1 na proxima curva
-            if(Personagens[0].listaCurvasPos){
+            if(Personagens[0].proxCurva>=0){
                 if(Personagens[0].curvaListaCurvas==0){
-                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvasLigadas.size()-1];
+                    Personagens[0].curvaListaCurvas=Personagens[0].curvasLigadas.size()-1;
                 }
                 else{
                     Personagens[0].curvaListaCurvas--;
-                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
                     }
-                //ver como pintar proxima curva
-                defineCor(Firebrick);
-                Curvas[Personagens[0].proxCurva].Traca();
+                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
             }
             break;
 		case GLUT_KEY_UP:       // Se pressionar UP
