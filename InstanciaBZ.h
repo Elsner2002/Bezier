@@ -14,6 +14,7 @@ using namespace std;
 
 #include "Bezier.h"
 #include "ListaDeCoresRGB.h"
+#include "Poligono.h"
 
 typedef void TipoFuncao();
 
@@ -43,6 +44,7 @@ public:
     void desenha();
     void AtualizaPosicao(float tempoDecorrido);
     Ponto ObtemPosicao();
+    void AtualizaIndoParaZ(Poligono *CurvasBZ, size_t numCurvas);
 };
 
 
