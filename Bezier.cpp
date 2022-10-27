@@ -5,6 +5,7 @@
 
 #include "Bezier.h"
 #include <iostream>
+#include "ListaDeCoresRGB.h"
 
 // **********************************************************************
 Bezier::Bezier()
@@ -86,6 +87,7 @@ void Bezier::Traca()
 {
     double t=0.0;
     double DeltaT = 1.0/50;
+    defineCor(cor);
     Ponto P;
     //cout << "DeltaT: " << DeltaT << endl;
     glBegin(GL_LINE_STRIP);

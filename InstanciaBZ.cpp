@@ -78,6 +78,7 @@ void InstanciaBZ::desenha()
         glRotatef(Rotacao, 0, 0, 1);
         glScalef(Escala.x, Escala.y, Escala.z);
 
+        defineCor(cor);
         (*modelo)(); // desenha a instancia
 
     glPopMatrix();
@@ -113,8 +114,8 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 }
 void InstanciaBZ::AtualizaIndoParaZ(Poligono *CurvasBZ, size_t numCurvas)
 {
-	Poligono *CurvaBZAtual = CurvasBZ[nroDaCurva];
-	Poligono *CurvaBZProxima = CurvasBZ[proxCurva];
+	Poligono *CurvaBZAtual = &CurvasBZ[nroDaCurva];
+	Poligono *CurvaBZProxima = &CurvasBZ[proxCurva];
 
 	if (Curva) {
 	}

@@ -136,13 +136,11 @@ void DesenhaEixos()
 // **********************************************************************
 void DesenhaPlayer()
 {
-    defineCor(LimeGreen);
     Mastro.desenhaPoligono();
 }
 
 void DesenhaInimigo()
 {
-    defineCor(rand() % 100);
     Mastro.desenhaPoligono();
 }
 // **********************************************************************
@@ -152,6 +150,7 @@ void CriaInstancias()
 {
     Personagens[0].Posicao = Ponto (3,0);
     Personagens[0].modelo = DesenhaPlayer;
+    Personagens[0].cor= LimeGreen;
     Personagens[0].indoParaZ = true;
     Personagens[0].Escala = Ponto (0.4,0.4,0.4);
 	Personagens[0].Curva = &Curvas[0];
@@ -159,6 +158,20 @@ void CriaInstancias()
 
 	for (size_t i = 1; i < nInstancias; i++) {
 		Personagens[i].Posicao = Ponto (0,0);
+        bool existe=false;
+        do{
+            Personagens[i].cor= rand() % 100;
+            for(size_t j=0; j<i;j++){
+                if(Personagens[i].cor==Personagens[j].cor){
+                    existe=true;
+                    break;
+                }
+                else{
+                    existe=false;
+                }
+            }
+
+        }while(existe);
 		Personagens[i].modelo = DesenhaInimigo;
 		Personagens[i].indoParaZ = true;
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
@@ -182,6 +195,20 @@ void CriaCurvas()
 {
     nCurvas = CurvasBZ.getNVertices(); //qtd curvas no topo do txt de curvas
     for(int i =0;i<nCurvas;i++){
+        bool existe=false;
+        do{
+            Curvas[i].cor= rand() % 100;
+            for(size_t j=0; j<i;j++){
+                if(Curvas[i].cor==Curvas[j].cor){
+                    existe=true;
+                    break;
+                }
+                else{
+                    existe=false;
+                }
+            }
+
+        }while(existe);
         Curvas[i] = Bezier(PontosCurvas.getVertice(CurvasBZ.getVertice(i).x), PontosCurvas.getVertice(CurvasBZ.getVertice(i).y), PontosCurvas.getVertice(CurvasBZ.getVertice(i).z));
     }
 }
@@ -284,7 +311,6 @@ void DesenhaCurvas()
 {
     for(int i=0; i<nCurvas;i++)
     {
-        defineCor(Gold);
         Curvas[i].Traca();
     }
 }
