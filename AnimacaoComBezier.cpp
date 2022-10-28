@@ -153,7 +153,9 @@ void CriaInstancias()
     nInstancias = 11;
 
 	for (size_t i = 1; i < nInstancias; i++) {
-		Personagens[i].Posicao = Ponto (0,0);
+		Personagens[i].Curva = &Curvas[i];
+		Personagens[i].Posicao = Personagens[i].Curva->getPC(0);
+
         bool existe=false;
         do{
             Personagens[i].cor= rand() % 100;
@@ -166,19 +168,17 @@ void CriaInstancias()
                     existe=false;
                 }
             }
-
         }while(existe);
+
 		Personagens[i].modelo = DesenhaInstancia;
 		Personagens[i].indoParaZ = true;
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
-		Personagens[i].Curva = &Curvas[i];
+		Personagens[i].nroDaCurva = i;
 	}
 
 
 }
-// **********************************************************************
-//
-// **********************************************************************
+
 void CarregaModelos()
 {
     Mapa.LePoligono("EstadoRS.txt");
@@ -187,9 +187,11 @@ void CarregaModelos()
     PontosCurvas.LePoligono("cordPontos.txt");
     CurvasBZ.LePoligonoZ("ListaCurvas.txt");
 }
+
 void CriaCurvas()
 {
-    nCurvas = CurvasBZ.getNVertices(); //qtd curvas no topo do txt de curvas
+    nCurvas = CurvasBZ.getNVertices();
+
     for(int i =0;i<nCurvas;i++){
         bool existe=false;
         do{
@@ -205,37 +207,33 @@ void CriaCurvas()
             }
 
         }while(existe);
-        Curvas[i] = Bezier(PontosCurvas.getVertice(CurvasBZ.getVertice(i).x), PontosCurvas.getVertice(CurvasBZ.getVertice(i).y), PontosCurvas.getVertice(CurvasBZ.getVertice(i).z));
+
+        Curvas[i] = Bezier(
+			PontosCurvas.getVertice(CurvasBZ.getVertice(i).x),
+			PontosCurvas.getVertice(CurvasBZ.getVertice(i).y),
+			PontosCurvas.getVertice(CurvasBZ.getVertice(i).z)
+		);
     }
 }
 
 //cria matriz com as curvas que se encontram
 void encontroCurvas(){
-    for(int i=0; i<26;i++){
-        for(int j=0; j<26;j++){
-            if(i==j){
-                ligaCurvasX[i][j]=false;
-                ligaCurvasZ[i][j]=false;
-            }
-            else{
-                if(CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).x
-                ||CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).z){
-                    ligaCurvasX[i][j]=true;
-                }
-                else{
-                    ligaCurvasX[i][j]=false;
-                }
-                if(CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x
-                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).z){
-                    ligaCurvasZ[i][j]=true;
-                }
-                else{
-                    ligaCurvasZ[i][j]=false;
-                }
+    for (int i = 0; i < 26; i++) {
+        for (int j = 0; j < 26; j++) {
+			ligaCurvasZ[i][j] = false;
+			ligaCurvasX[i][j] = false;
+
+            if (i != j) {
+				if (Curvas[i].getPC(2) == Curvas[j].getPC(0)) {
+					ligaCurvasZ[i][j] = true;
+				} else if (Curvas[i].getPC(0) == Curvas[j].getPC(2)) {
+					ligaCurvasX[i][j] = true;
+				}
             }
         }
     }
 }
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -281,9 +279,6 @@ void MovimentaPersonagens(double tempoDecorrido)
 			personagem->AtualizaIndoParaZ(proxCurva);
 			personagem->Curva = &Curvas[personagem->nroDaCurva];
 			continue;
-			/* glLineWidth(0); */
-			/* Curvas[Personagens[0].proxCurva].Traca(); */
-			/* glLineWidth(0); */
 		}
 
 		if (personagem->tAtual < 0.5) {
@@ -301,13 +296,9 @@ void MovimentaPersonagens(double tempoDecorrido)
 			}
 		}
 
-		personagem->curvaListaCurvas = rand() % curvasPossiveis.size();
-		personagem->proxCurva = curvasPossiveis[personagem->curvaListaCurvas];
-
-		if(!personagem->listaCurvasPos){
-			personagem->curvasLigadas = curvasPossiveis;
-			personagem->listaCurvasPos = true;
-		}
+		personagem->proxCurva = curvasPossiveis[
+			rand() % curvasPossiveis.size()
+		];
 	}
 }
 
@@ -417,28 +408,25 @@ void keyboard ( unsigned char key, int x, int y )
 					}
 				}
 
-                Personagens[0].curvaListaCurvas=rand() % curvasPossiveis.size();
-				Personagens[0].proxCurva = curvasPossiveis[Personagens[0].curvaListaCurvas];
-                if(!Personagens[0].listaCurvasPos){
-                    Personagens[0].curvasLigadas =curvasPossiveis;
-                    Personagens[0].listaCurvasPos=true;
-                }
+				Personagens[0].proxCurva = curvasPossiveis[
+					rand() % curvasPossiveis.size()
+				];
 			}
-            //TODO: ate aqui
-            if(Personagens[0].indoParaZ){
+
+            if (Personagens[0].indoParaZ) {
                 Personagens[0].indoParaZ = false;
 
 				if (Personagens[0].Velocidade != 0) {
 					Personagens[0].Velocidade = -1.0;
 				}
-            }
-            else{
+            } else {
                 Personagens[0].indoParaZ = true;
 
 				if (Personagens[0].Velocidade != 0) {
 					Personagens[0].Velocidade = 1.0;
 				}
             }
+
             break;
 		default:
 			break;
@@ -452,30 +440,10 @@ void arrow_keys ( int a_keys, int x, int y )
 	switch ( a_keys )
 	{
         case GLUT_KEY_LEFT:
-            //diminuir 1 na proxima curva
-            if(Personagens[0].proxCurva>=0){
-
-                if(Personagens[0].curvaListaCurvas+1==Personagens[0].curvasLigadas.size()){
-                    Personagens[0].curvaListaCurvas=0;
-                }
-                else{
-                    Personagens[0].curvaListaCurvas++;
-                    }
-                Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
-
-            }
+			// TODO
             break;
         case GLUT_KEY_RIGHT:
-            //aumentar 1 na proxima curva
-            if(Personagens[0].proxCurva>=0){
-                if(Personagens[0].curvaListaCurvas==0){
-                    Personagens[0].curvaListaCurvas=Personagens[0].curvasLigadas.size()-1;
-                }
-                else{
-                    Personagens[0].curvaListaCurvas--;
-                    }
-                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
-            }
+			// TODO
             break;
 		case GLUT_KEY_UP:       // Se pressionar UP
 			glutFullScreen ( ); // Vai para Full Screen

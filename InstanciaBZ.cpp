@@ -110,11 +110,10 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 		tAtual = 0;
 		nroDaCurva = proxCurva;
 		proxCurva = -1;
-		curvasLigadas = std::vector<int>();
-		listaCurvasPos = false;
+		return;
 	}
 
-    Posicao=Curva->Calcula(tAtual);
+    Posicao = Curva->Calcula(tAtual);
 }
 
 void InstanciaBZ::AtualizaIndoParaZ(Bezier *proxCurva)
