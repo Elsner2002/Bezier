@@ -36,7 +36,7 @@ public:
     int cor;
     float Velocidade;
     float tAtual;
-    int direcao; // andando do fim para o inicio, ou ao contrario
+
     vector<int> curvasLigadas;
     bool listaCurvasPos;
     int curvaListaCurvas;
@@ -44,7 +44,7 @@ public:
     void desenha();
     void AtualizaPosicao(float tempoDecorrido);
     Ponto ObtemPosicao();
-    void AtualizaIndoParaZ(Poligono *CurvasBZ, size_t numCurvas);
+	void AtualizaIndoParaZ(Bezier *proxCurva);
 };
 
 

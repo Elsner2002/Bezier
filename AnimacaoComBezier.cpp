@@ -260,48 +260,57 @@ void init()
 void DesenhaPersonagens(float tempoDecorrido)
 {
     cout << "nInstancias: "<< nInstancias << endl;
-    for(int i=0; i<nInstancias;i++)
-    {
-        Personagens[i].AtualizaPosicao(tempoDecorrido);
 
-		if (Personagens[i].proxCurva<0) {
-			if (Personagens[i].tAtual >= 0.5) {
-                //lista das curvas possíveis
-				std::vector<int> curvasPossiveis;
-
-				if (Personagens[i].indoParaZ) {
-					for (size_t j = 0; j < nCurvas; j++) {
-						if (ligaCurvasZ[Personagens[i].nroDaCurva][j]) {
-							curvasPossiveis.push_back(j);
-						}
-					}
-				} else {
-					for (size_t j = 0; j < nCurvas; j++) {
-						if (ligaCurvasX[Personagens[i].nroDaCurva][j]) {
-							curvasPossiveis.push_back(j);
-						}
-					}
-				}
-                Personagens[i].curvaListaCurvas=rand() % curvasPossiveis.size();
-				Personagens[i].proxCurva = curvasPossiveis[Personagens[i].curvaListaCurvas];
-                if(!Personagens[i].listaCurvasPos){
-                    Personagens[i].curvasLigadas =curvasPossiveis;
-                    Personagens[i].listaCurvasPos=true;
-                }
-			} else if (Personagens[i].tAtual == 0) {
-				Personagens[i].Curva = &Curvas[Personagens[i].nroDaCurva];
-                std::vector<int> vazio;
-                Personagens[i].curvasLigadas = vazio;
-                Personagens[i].listaCurvasPos=false;
-                glLineWidth(0);
-                Curvas[Personagens[0].proxCurva].Traca();
-                glLineWidth(0);
-                Personagens[i].proxCurva=-1;
-			}
-		}
+    for(size_t i = 0; i < nInstancias; i++) {
         Personagens[i].desenha();
     }
 }
+
+void MovimentaPersonagens(double tempoDecorrido)
+{
+	for(size_t i = 0; i < nInstancias; i++) {
+		InstanciaBZ *personagem = &Personagens[i];
+		personagem->AtualizaPosicao(tempoDecorrido);
+
+		if (personagem->proxCurva != -1) {
+			continue;
+		}
+
+		if (personagem->tAtual == 0) {
+			Bezier *proxCurva = &Curvas[personagem->nroDaCurva];
+			personagem->AtualizaIndoParaZ(proxCurva);
+			personagem->Curva = &Curvas[personagem->nroDaCurva];
+			continue;
+			/* glLineWidth(0); */
+			/* Curvas[Personagens[0].proxCurva].Traca(); */
+			/* glLineWidth(0); */
+		}
+
+		if (personagem->tAtual < 0.5) {
+			continue;
+		}
+
+		std::vector<int> curvasPossiveis;
+
+		bool (*ligaCurvas)[26][26] = personagem->indoParaZ ?
+			&ligaCurvasZ : &ligaCurvasX;
+
+		for (size_t j = 0; j < nCurvas; j++) {
+			if (ligaCurvas[personagem->nroDaCurva][j]) {
+				curvasPossiveis.push_back(j);
+			}
+		}
+
+		personagem->curvaListaCurvas = rand() % curvasPossiveis.size();
+		personagem->proxCurva = curvasPossiveis[personagem->curvaListaCurvas];
+
+		if(!personagem->listaCurvasPos){
+			personagem->curvasLigadas = curvasPossiveis;
+			personagem->listaCurvasPos = true;
+		}
+	}
+}
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -322,6 +331,7 @@ void DesenhaCurvas()
 // **********************************************************************
 void display( void )
 {
+	double deltaT = T2.getDeltaT();
 
 	// Limpa a tela coma cor de fundo
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -339,7 +349,8 @@ void display( void )
 
     DesenhaEixos();
 
-    DesenhaPersonagens(T2.getDeltaT());
+	MovimentaPersonagens(deltaT);
+    DesenhaPersonagens(deltaT);
     DesenhaCurvas();
 
 	glutSwapBuffers();
@@ -382,7 +393,7 @@ void keyboard ( unsigned char key, int x, int y )
             break;
         case ' ':
 			if (Personagens[0].Velocidade == 0) {
-				if (Personagens[0].direcao == 1) {
+				if (Personagens[0].indoParaZ) {
 					Personagens[0].Velocidade = 1.0;
 				} else {
 					Personagens[0].Velocidade = -1.0;
@@ -393,26 +404,19 @@ void keyboard ( unsigned char key, int x, int y )
             break;
         case 'c':
             Personagens[0].Rotacao-=180;
-            //TODO: ver com o Bernardo quando o metodo AtualizaIndoParaZestiver pronto
-            //ver o q faz e como funciona para talvez mudar aqui 
-            Personagens[0].indoParaZ=!Personagens[0].indoParaZ;
+            Personagens[0].indoParaZ ^= true;
             if (Personagens[0].tAtual >= 0.5) {
-                //lista das curvas possíveis
 				std::vector<int> curvasPossiveis;
 
-				if (Personagens[0].indoParaZ) {
-					for (size_t j = 0; j < nCurvas; j++) {
-						if (ligaCurvasZ[Personagens[0].nroDaCurva][j]) {
-							curvasPossiveis.push_back(j);
-						}
-					}
-				} else {
-					for (size_t j = 0; j < nCurvas; j++) {
-						if (ligaCurvasX[Personagens[0].nroDaCurva][j]) {
-							curvasPossiveis.push_back(j);
-						}
+				bool (*ligaCurvas)[26][26] = Personagens[0].indoParaZ ?
+					&ligaCurvasZ : &ligaCurvasX;
+
+				for (size_t j = 0; j < nCurvas; j++) {
+					if (ligaCurvas[Personagens[0].nroDaCurva][j]) {
+						curvasPossiveis.push_back(j);
 					}
 				}
+
                 Personagens[0].curvaListaCurvas=rand() % curvasPossiveis.size();
 				Personagens[0].proxCurva = curvasPossiveis[Personagens[0].curvaListaCurvas];
                 if(!Personagens[0].listaCurvasPos){
@@ -421,15 +425,15 @@ void keyboard ( unsigned char key, int x, int y )
                 }
 			}
             //TODO: ate aqui
-            if(Personagens[0].direcao==1){
-                Personagens[0].direcao=0;
+            if(Personagens[0].indoParaZ){
+                Personagens[0].indoParaZ = false;
 
 				if (Personagens[0].Velocidade != 0) {
 					Personagens[0].Velocidade = -1.0;
 				}
             }
             else{
-                Personagens[0].direcao=1;
+                Personagens[0].indoParaZ = true;
 
 				if (Personagens[0].Velocidade != 0) {
 					Personagens[0].Velocidade = 1.0;
@@ -450,7 +454,7 @@ void arrow_keys ( int a_keys, int x, int y )
         case GLUT_KEY_LEFT:
             //diminuir 1 na proxima curva
             if(Personagens[0].proxCurva>=0){
-                
+
                 if(Personagens[0].curvaListaCurvas+1==Personagens[0].curvasLigadas.size()){
                     Personagens[0].curvaListaCurvas=0;
                 }
@@ -458,7 +462,7 @@ void arrow_keys ( int a_keys, int x, int y )
                     Personagens[0].curvaListaCurvas++;
                     }
                 Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
-                
+
             }
             break;
         case GLUT_KEY_RIGHT:

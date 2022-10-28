@@ -52,10 +52,10 @@ InstanciaBZ::InstanciaBZ()
     nroDaCurva = 0;
     proxCurva = -1;
     tAtual = 0.0;
-    direcao = 1;
-    Velocidade=1;
-
+    indoParaZ = true;
+    Velocidade = 1;
 }
+
 InstanciaBZ::InstanciaBZ(Bezier *C)
 {
 
@@ -65,7 +65,7 @@ InstanciaBZ::InstanciaBZ(Bezier *C)
 
     Curva = C;
     tAtual = 0;
-    direcao = 1;
+	indoParaZ = true;
 }
 
 void InstanciaBZ::desenha()
@@ -83,6 +83,7 @@ void InstanciaBZ::desenha()
 
     glPopMatrix();
 }
+
 Ponto InstanciaBZ::ObtemPosicao()
 {
     // aplica as transformacoes geometricas no modelo
@@ -98,9 +99,10 @@ Ponto InstanciaBZ::ObtemPosicao()
     glPopMatrix();
     return PosicaoDoPersonagem;
 }
+
 void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 {
-    double dist=Velocidade*tempoDecorrido;
+    double dist = Velocidade*tempoDecorrido;
 	double deltaT = Curva->CalculaT(dist);
 	tAtual += deltaT;
 
@@ -108,15 +110,18 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 		tAtual = 0;
 		nroDaCurva = proxCurva;
 		proxCurva = -1;
+		curvasLigadas = std::vector<int>();
+		listaCurvasPos = false;
 	}
 
     Posicao=Curva->Calcula(tAtual);
 }
-void InstanciaBZ::AtualizaIndoParaZ(Poligono *CurvasBZ, size_t numCurvas)
-{
-	Poligono *CurvaBZAtual = &CurvasBZ[nroDaCurva];
-	Poligono *CurvaBZProxima = &CurvasBZ[proxCurva];
 
-	if (Curva) {
+void InstanciaBZ::AtualizaIndoParaZ(Bezier *proxCurva)
+{
+	if (this->Curva->getPC(2) == proxCurva->getPC(0)) {
+		this->indoParaZ = true;
+	} else {
+		this-> indoParaZ = false;
 	}
 }
