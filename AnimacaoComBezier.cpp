@@ -224,9 +224,9 @@ void encontroCurvas(){
 			ligaCurvasX[i][j] = false;
 
             if (i != j) {
-				if (Curvas[i].getPC(2) == Curvas[j].getPC(0)||Curvas[i].getPC(2) == Curvas[j].getPC(2)) {
+				if (Curvas[i].getPC(0) == Curvas[j].getPC(2)||Curvas[i].getPC(0) == Curvas[j].getPC(0)) {
 					ligaCurvasZ[i][j] = true;
-				} else if (Curvas[i].getPC(0) == Curvas[j].getPC(2)||Curvas[i].getPC(0) == Curvas[j].getPC(0)) {
+				} else if (Curvas[i].getPC(2) == Curvas[j].getPC(2)||Curvas[i].getPC(2) == Curvas[j].getPC(0)) {
 					ligaCurvasX[i][j] = true;
 				}
             }
