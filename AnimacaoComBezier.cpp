@@ -150,9 +150,9 @@ void CriaInstancias()
     Personagens[0].indoParaZ = true;
     Personagens[0].Escala = Ponto (0.4,0.4,0.4);
 	Personagens[0].Curva = &Curvas[0];
-    nInstancias = 11;
+    nInstancias = 1;
 
-	for (size_t i = 1; i < nInstancias; i++) {
+	/*for (size_t i = 1; i < nInstancias; i++) {
 		Personagens[i].Posicao = Ponto (0,0);
         bool existe=false;
         do{
@@ -172,7 +172,7 @@ void CriaInstancias()
 		Personagens[i].indoParaZ = true;
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
 		Personagens[i].Curva = &Curvas[i];
-	}
+	}*/
 
 
 }
@@ -260,6 +260,11 @@ void init()
 void DesenhaPersonagens(float tempoDecorrido)
 {
     cout << "nInstancias: "<< nInstancias << endl;
+    cout << "Velocidade: "<< Personagens[0].Velocidade << endl;
+    cout << "tAtual: "<< Personagens[0].tAtual << endl;
+    cout << "nroDaCurva: "<< Personagens[0].nroDaCurva << endl;
+    cout << "proxCurva: "<< Personagens[0].proxCurva << endl;
+    cout << "indoParaZ: "<< Personagens[0].indoParaZ << endl;
 
     for(size_t i = 0; i < nInstancias; i++) {
         Personagens[i].desenha();
@@ -276,7 +281,7 @@ void MovimentaPersonagens(double tempoDecorrido)
 			continue;
 		}
 
-		if (personagem->tAtual == 0) {
+		if (personagem->tAtual == 0 ||personagem->tAtual == 1 ) {
 			Bezier *proxCurva = &Curvas[personagem->nroDaCurva];
 			personagem->AtualizaIndoParaZ(proxCurva);
 			personagem->Curva = &Curvas[personagem->nroDaCurva];
@@ -286,7 +291,7 @@ void MovimentaPersonagens(double tempoDecorrido)
 			/* glLineWidth(0); */
 		}
 
-		if (personagem->tAtual < 0.5) {
+		if ((personagem->tAtual < 0.5 && personagem->indoParaZ)||(personagem->tAtual > 0.5 && !personagem->indoParaZ)) {
 			continue;
 		}
 
@@ -412,17 +417,21 @@ void keyboard ( unsigned char key, int x, int y )
         case 'c':
             Personagens[0].Rotacao-=180;
             Personagens[0].indoParaZ ^= true;
-            if (Personagens[0].tAtual >= 0.5) {
+            if ((Personagens[0].tAtual >= 0.5 && Personagens[0].indoParaZ)||(Personagens[0].tAtual <= 0.5 && !Personagens[0].indoParaZ)) {
 				std::vector<int> curvasPossiveis;
 
-				bool (*ligaCurvas)[26][26] = Personagens[0].indoParaZ ?
-					&ligaCurvasZ : &ligaCurvasX;
-
 				for (size_t j = 0; j < nCurvas; j++) {
-					if (ligaCurvas[Personagens[0].nroDaCurva][j]) {
-						curvasPossiveis.push_back(j);
-					}
-				}
+		        	if (Personagens[0].indoParaZ){
+                        if(ligaCurvasZ[Personagens[0].nroDaCurva][j]) {
+		        		    curvasPossiveis.push_back(j);
+    	        		}
+                    }
+                    else{
+                        if(ligaCurvasX[Personagens[0].nroDaCurva][j]) {
+		        		    curvasPossiveis.push_back(j);
+    	        		}
+                    }
+		        }
 
                 Personagens[0].curvaListaCurvas=rand() % curvasPossiveis.size();
 				Personagens[0].proxCurva = curvasPossiveis[Personagens[0].curvaListaCurvas];
@@ -431,7 +440,6 @@ void keyboard ( unsigned char key, int x, int y )
                     Personagens[0].listaCurvasPos=true;
                 }
 			}
-            //TODO: ate aqui
             if(Personagens[0].indoParaZ){
                 Personagens[0].indoParaZ = false;
 

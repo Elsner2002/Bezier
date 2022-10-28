@@ -106,8 +106,14 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 	double deltaT = Curva->CalculaT(dist);
 	tAtual += deltaT;
 
-	if (tAtual >= 1.0) {
-		tAtual = 0;
+	if ((tAtual > 1.0&&indoParaZ)||(tAtual < 0&&!indoParaZ)) {
+		if(indoParaZ){
+            tAtual = 0;
+        }
+        else{
+            tAtual=1.0;
+        }
+        
 		nroDaCurva = proxCurva;
 		proxCurva = -1;
 		curvasLigadas = std::vector<int>();
@@ -119,9 +125,11 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 
 void InstanciaBZ::AtualizaIndoParaZ(Bezier *proxCurva)
 {
-	if (this->Curva->getPC(2) == proxCurva->getPC(0)) {
+	if (this->Curva->getPC(2) == proxCurva->getPC(0)||this->Curva->getPC(0) == proxCurva->getPC(0)) {
 		this->indoParaZ = true;
+        Velocidade=1.0;
 	} else {
 		this-> indoParaZ = false;
+        Velocidade=-1.0;
 	}
 }
