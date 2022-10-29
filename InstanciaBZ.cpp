@@ -70,8 +70,6 @@ InstanciaBZ::InstanciaBZ(Bezier *C)
 
 void InstanciaBZ::desenha()
 {
-    Escala.imprime("Escala: ");
-    cout << endl;
     // Aplica as transformacoes geometricas no modelo
     glPushMatrix();
         glTranslatef(Posicao.x, Posicao.y, 0);
@@ -113,12 +111,16 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 		return;
 	}
 
-    Posicao = Curva->Calcula(tAtual);
+	double tUsado = indoParaZ ? tAtual : 1 - tAtual;
+    Posicao = Curva->Calcula(tUsado);
 }
 
 void InstanciaBZ::AtualizaIndoParaZ(Bezier *proxCurva)
 {
-	if (this->Curva->getPC(2) == proxCurva->getPC(0)) {
+	if (
+		this->Curva->getPC(2) == proxCurva->getPC(0)
+		|| this->Curva->getPC(0) == proxCurva->getPC(0)
+	) {
 		this->indoParaZ = true;
 	} else {
 		this-> indoParaZ = false;

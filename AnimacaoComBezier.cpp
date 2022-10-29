@@ -19,7 +19,6 @@
 #include <ctime>
 #include <fstream>
 
-
 using namespace std;
 
 #ifdef WIN32
@@ -175,8 +174,6 @@ void CriaInstancias()
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
 		Personagens[i].nroDaCurva = i;
 	}
-
-
 }
 
 void CarregaModelos()
@@ -257,8 +254,6 @@ void init()
 // **********************************************************************
 void DesenhaPersonagens(float tempoDecorrido)
 {
-    cout << "nInstancias: "<< nInstancias << endl;
-
     for(size_t i = 0; i < nInstancias; i++) {
         Personagens[i].desenha();
     }
@@ -287,12 +282,17 @@ void MovimentaPersonagens(double tempoDecorrido)
 
 		std::vector<int> curvasPossiveis;
 
-		bool (*ligaCurvas)[26][26] = personagem->indoParaZ ?
-			&ligaCurvasZ : &ligaCurvasX;
-
-		for (size_t j = 0; j < nCurvas; j++) {
-			if (ligaCurvas[personagem->nroDaCurva][j]) {
-				curvasPossiveis.push_back(j);
+		if (personagem->indoParaZ) {
+			for (size_t j = 0; j < nCurvas; j++) {
+				if (ligaCurvasZ[personagem->nroDaCurva][j]) {
+					curvasPossiveis.push_back(j);
+				}
+			}
+		} else {
+			for (size_t j = 0; j < nCurvas; j++) {
+				if (ligaCurvasX[personagem->nroDaCurva][j]) {
+					curvasPossiveis.push_back(j);
+				}
 			}
 		}
 
