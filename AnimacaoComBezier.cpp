@@ -415,14 +415,18 @@ void keyboard ( unsigned char key, int x, int y )
             if (Personagens[0].tAtual >= 0.5) {
 				std::vector<int> curvasPossiveis;
 
-				bool (*ligaCurvas)[26][26] = Personagens[0].indoParaZ ?
-					&ligaCurvasZ : &ligaCurvasX;
-
-				for (size_t j = 0; j < nCurvas; j++) {
-					if (ligaCurvas[Personagens[0].nroDaCurva][j]) {
-						curvasPossiveis.push_back(j);
-					}
-				}
+		        for (size_t j = 0; j < nCurvas; j++) {
+		        	if (personagem->indoParaZ){
+                        if(ligaCurvasZ[personagem->nroDaCurva][j]) {
+		        		    curvasPossiveis.push_back(j);
+    	        		}
+                    }
+                    else{
+                        if(ligaCurvasX[personagem->nroDaCurva][j]) {
+		        		    curvasPossiveis.push_back(j);
+    	        		}
+                    }
+		        }
 
                 Personagens[0].curvaListaCurvas=rand() % curvasPossiveis.size();
 				Personagens[0].proxCurva = curvasPossiveis[Personagens[0].curvaListaCurvas];
