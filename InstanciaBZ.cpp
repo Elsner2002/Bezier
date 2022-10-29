@@ -7,6 +7,7 @@
 //
 
 #include "InstanciaBZ.h"
+#include <cmath>
 
 // ***********************************************************
 //  void InstanciaPonto(Ponto3D *p, Ponto3D *out)
@@ -102,6 +103,7 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 {
     double dist = Velocidade*tempoDecorrido;
 	double deltaT = Curva->CalculaT(dist);
+    float tAntigo=tAtual; //usa na rotacao
 	tAtual += deltaT;
 
 	if (tAtual >= 1.0) {
@@ -113,6 +115,17 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 
 	double tUsado = indoParaZ ? tAtual : 1 - tAtual;
     Posicao = Curva->Calcula(tUsado);
+    
+    //rotacao
+    Ponto vetHor (1,0,0);
+    Ponto vetMov = tAtual-tAntigo;
+    double cosAngulo = (vetHor*vetMov)/vetMov.modulo();
+    double arcos = acosf(cosAngulo);
+    if(vetMov.y<0){
+        arcos=arcos*-1;
+    }
+    Rotacao=arcos*(180/M_PI); 
+    //rotacao
 }
 
 void InstanciaBZ::AtualizaIndoParaZ(Bezier *proxCurva)
