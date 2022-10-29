@@ -386,39 +386,9 @@ void keyboard ( unsigned char key, int x, int y )
 			Personagens[0].Velocidade = Personagens[0].Velocidade == 1 ? 0 : 1;
             break;
         case 'c':
-            Personagens[0].Rotacao-=180;
             Personagens[0].indoParaZ ^= true;
-            if (Personagens[0].tAtual >= 0.5) {
-				std::vector<int> curvasPossiveis;
-
-				bool (*ligaCurvas)[26][26] = Personagens[0].indoParaZ ?
-					&ligaCurvasZ : &ligaCurvasX;
-
-				for (size_t j = 0; j < nCurvas; j++) {
-					if (ligaCurvas[Personagens[0].nroDaCurva][j]) {
-						curvasPossiveis.push_back(j);
-					}
-				}
-
-				Personagens[0].proxCurva = curvasPossiveis[
-					rand() % curvasPossiveis.size()
-				];
-			}
-
-            if (Personagens[0].indoParaZ) {
-                Personagens[0].indoParaZ = false;
-
-				if (Personagens[0].Velocidade != 0) {
-					Personagens[0].Velocidade = -1.0;
-				}
-            } else {
-                Personagens[0].indoParaZ = true;
-
-				if (Personagens[0].Velocidade != 0) {
-					Personagens[0].Velocidade = 1.0;
-				}
-            }
-
+			Personagens[0].tAtual = 1 - Personagens[0].tAtual;
+			Personagens[0].proxCurva = -1;
             break;
 		default:
 			break;
