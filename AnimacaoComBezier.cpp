@@ -19,7 +19,6 @@
 #include <ctime>
 #include <fstream>
 
-
 using namespace std;
 
 #ifdef WIN32
@@ -49,6 +48,8 @@ double AccumDeltaT=0;
 Temporizador T2;
 
 InstanciaBZ Personagens[11];
+bool curvaFoiSelecionada = false;
+int curvaSelecionada = 0;
 
 Bezier Curvas[26];
 unsigned int nCurvas;
@@ -153,7 +154,9 @@ void CriaInstancias()
     nInstancias = 11;
 
 	for (size_t i = 1; i < nInstancias; i++) {
-		Personagens[i].Posicao = Ponto (0,0);
+		Personagens[i].Curva = &Curvas[i];
+		Personagens[i].Posicao = Personagens[i].Curva->getPC(0);
+
         bool existe=false;
         do{
             Personagens[i].cor= rand() % 100;
@@ -166,19 +169,15 @@ void CriaInstancias()
                     existe=false;
                 }
             }
-
         }while(existe);
+
 		Personagens[i].modelo = DesenhaInstancia;
 		Personagens[i].indoParaZ = true;
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
-		Personagens[i].Curva = &Curvas[i];
+		Personagens[i].nroDaCurva = i;
 	}
-
-
 }
-// **********************************************************************
-//
-// **********************************************************************
+
 void CarregaModelos()
 {
     Mapa.LePoligono("EstadoRS.txt");
@@ -187,9 +186,11 @@ void CarregaModelos()
     PontosCurvas.LePoligono("cordPontos.txt");
     CurvasBZ.LePoligonoZ("ListaCurvas.txt");
 }
+
 void CriaCurvas()
 {
-    nCurvas = CurvasBZ.getNVertices(); //qtd curvas no topo do txt de curvas
+    nCurvas = CurvasBZ.getNVertices();
+
     for(int i =0;i<nCurvas;i++){
         bool existe=false;
         do{
@@ -205,37 +206,33 @@ void CriaCurvas()
             }
 
         }while(existe);
-        Curvas[i] = Bezier(PontosCurvas.getVertice(CurvasBZ.getVertice(i).x), PontosCurvas.getVertice(CurvasBZ.getVertice(i).y), PontosCurvas.getVertice(CurvasBZ.getVertice(i).z));
+
+        Curvas[i] = Bezier(
+			PontosCurvas.getVertice(CurvasBZ.getVertice(i).x),
+			PontosCurvas.getVertice(CurvasBZ.getVertice(i).y),
+			PontosCurvas.getVertice(CurvasBZ.getVertice(i).z)
+		);
     }
 }
 
 //cria matriz com as curvas que se encontram
 void encontroCurvas(){
-    for(int i=0; i<26;i++){
-        for(int j=0; j<26;j++){
-            if(i==j){
-                ligaCurvasX[i][j]=false;
-                ligaCurvasZ[i][j]=false;
-            }
-            else{
-                if(CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).x
-                ||CurvasBZ.getVertice(i).x==CurvasBZ.getVertice(j).z){
-                    ligaCurvasX[i][j]=true;
-                }
-                else{
-                    ligaCurvasX[i][j]=false;
-                }
-                if(CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).x
-                ||CurvasBZ.getVertice(i).z==CurvasBZ.getVertice(j).z){
-                    ligaCurvasZ[i][j]=true;
-                }
-                else{
-                    ligaCurvasZ[i][j]=false;
-                }
+    for (int i = 0; i < 26; i++) {
+        for (int j = 0; j < 26; j++) {
+			ligaCurvasZ[i][j] = false;
+			ligaCurvasX[i][j] = false;
+
+            if (i != j) {
+				if (Curvas[i].getPC(2) == Curvas[j].getPC(2)||Curvas[i].getPC(2) == Curvas[j].getPC(0)) {
+					ligaCurvasZ[i][j] = true;
+				} else if (Curvas[i].getPC(0) == Curvas[j].getPC(2)||Curvas[i].getPC(0) == Curvas[j].getPC(0)) {
+					ligaCurvasX[i][j] = true;
+				}
             }
         }
     }
 }
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -259,8 +256,6 @@ void init()
 // **********************************************************************
 void DesenhaPersonagens(float tempoDecorrido)
 {
-    cout << "nInstancias: "<< nInstancias << endl;
-
     for(size_t i = 0; i < nInstancias; i++) {
         Personagens[i].desenha();
     }
@@ -281,37 +276,43 @@ void MovimentaPersonagens(double tempoDecorrido)
 			personagem->AtualizaIndoParaZ(proxCurva);
 			personagem->Curva = &Curvas[personagem->nroDaCurva];
 			continue;
-			/* glLineWidth(0); */
-			/* Curvas[Personagens[0].proxCurva].Traca(); */
-			/* glLineWidth(0); */
 		}
 
 		if (personagem->tAtual < 0.5) {
 			continue;
 		}
 
+		if (personagem->tAtual == 1 && i == 0) {
+			curvaFoiSelecionada = false;
+			curvaSelecionada = 0;
+			continue;
+		}
+
 		std::vector<int> curvasPossiveis;
 
-		for (size_t j = 0; j < nCurvas; j++) {
-			if (personagem->indoParaZ){
-                if(ligaCurvasZ[personagem->nroDaCurva][j]) {
-				    curvasPossiveis.push_back(j);
-    			}
-            }
-            else{
-                if(ligaCurvasX[personagem->nroDaCurva][j]) {
-				    curvasPossiveis.push_back(j);
-    			}
-            }
+		if (personagem->indoParaZ) {
+			for (size_t j = 0; j < nCurvas; j++) {
+				if (ligaCurvasZ[personagem->nroDaCurva][j]) {
+					curvasPossiveis.push_back(j);
+				}
+			}
+		} else {
+			for (size_t j = 0; j < nCurvas; j++) {
+				if (ligaCurvasX[personagem->nroDaCurva][j]) {
+					curvasPossiveis.push_back(j);
+				}
+			}
 		}
 
-		personagem->curvaListaCurvas = rand() % curvasPossiveis.size();
-		personagem->proxCurva = curvasPossiveis[personagem->curvaListaCurvas];
-
-		if(!personagem->listaCurvasPos){
-			personagem->curvasLigadas = curvasPossiveis;
-			personagem->listaCurvasPos = true;
+		if (i != 0 || !curvaFoiSelecionada) {
+			personagem->proxCurva = curvasPossiveis[
+				rand() % curvasPossiveis.size()
+			];
 		}
+
+		personagem->proxCurva = curvasPossiveis[
+			curvaSelecionada % curvasPossiveis.size()
+		];
 	}
 }
 
@@ -396,57 +397,12 @@ void keyboard ( unsigned char key, int x, int y )
             ContaTempo(3);
             break;
         case ' ':
-			if (Personagens[0].Velocidade == 0) {
-				if (Personagens[0].indoParaZ) {
-					Personagens[0].Velocidade = 1.0;
-				} else {
-					Personagens[0].Velocidade = -1.0;
-				}
-			} else {
-				Personagens[0].Velocidade = 0;
-			}
+			Personagens[0].Velocidade = Personagens[0].Velocidade == 1 ? 0 : 1;
             break;
         case 'c':
-            Personagens[0].Rotacao-=180;
             Personagens[0].indoParaZ ^= true;
-            if (Personagens[0].tAtual >= 0.5) {
-				std::vector<int> curvasPossiveis;
-
-		        for (size_t j = 0; j < nCurvas; j++) {
-		        	if (personagem->indoParaZ){
-                        if(ligaCurvasZ[personagem->nroDaCurva][j]) {
-		        		    curvasPossiveis.push_back(j);
-    	        		}
-                    }
-                    else{
-                        if(ligaCurvasX[personagem->nroDaCurva][j]) {
-		        		    curvasPossiveis.push_back(j);
-    	        		}
-                    }
-		        }
-
-                Personagens[0].curvaListaCurvas=rand() % curvasPossiveis.size();
-				Personagens[0].proxCurva = curvasPossiveis[Personagens[0].curvaListaCurvas];
-                if(!Personagens[0].listaCurvasPos){
-                    Personagens[0].curvasLigadas =curvasPossiveis;
-                    Personagens[0].listaCurvasPos=true;
-                }
-			}
-            //TODO: ate aqui
-            if(Personagens[0].indoParaZ){
-                Personagens[0].indoParaZ = false;
-
-				if (Personagens[0].Velocidade != 0) {
-					Personagens[0].Velocidade = -1.0;
-				}
-            }
-            else{
-                Personagens[0].indoParaZ = true;
-
-				if (Personagens[0].Velocidade != 0) {
-					Personagens[0].Velocidade = 1.0;
-				}
-            }
+			      Personagens[0].tAtual = 1 - Personagens[0].tAtual;
+			      Personagens[0].proxCurva = -1;
             break;
 		default:
 			break;
@@ -460,30 +416,14 @@ void arrow_keys ( int a_keys, int x, int y )
 	switch ( a_keys )
 	{
         case GLUT_KEY_LEFT:
-            //diminuir 1 na proxima curva
-            if(Personagens[0].proxCurva>=0){
-
-                if(Personagens[0].curvaListaCurvas+1==Personagens[0].curvasLigadas.size()){
-                    Personagens[0].curvaListaCurvas=0;
-                }
-                else{
-                    Personagens[0].curvaListaCurvas++;
-                    }
-                Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
-
-            }
+			curvaFoiSelecionada = true;
+			curvaSelecionada -= 1;
+			Personagens[0].proxCurva = -1;
             break;
         case GLUT_KEY_RIGHT:
-            //aumentar 1 na proxima curva
-            if(Personagens[0].proxCurva>=0){
-                if(Personagens[0].curvaListaCurvas==0){
-                    Personagens[0].curvaListaCurvas=Personagens[0].curvasLigadas.size()-1;
-                }
-                else{
-                    Personagens[0].curvaListaCurvas--;
-                    }
-                    Personagens[0].proxCurva=Personagens[0].curvasLigadas[Personagens[0].curvaListaCurvas];
-            }
+			curvaFoiSelecionada = true;
+			curvaSelecionada += 1;
+			Personagens[0].proxCurva = -1;
             break;
 		case GLUT_KEY_UP:       // Se pressionar UP
 			glutFullScreen ( ); // Vai para Full Screen

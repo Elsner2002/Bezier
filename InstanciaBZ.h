@@ -37,11 +37,7 @@ public:
     float Velocidade;
     float tAtual;
 
-    vector<int> curvasLigadas;
-    bool listaCurvasPos;
-    int curvaListaCurvas;
-
-    void desenha();
+	void desenha();
     void AtualizaPosicao(float tempoDecorrido);
     Ponto ObtemPosicao();
 	void AtualizaIndoParaZ(Bezier *proxCurva);
