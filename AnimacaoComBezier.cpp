@@ -383,15 +383,7 @@ void keyboard ( unsigned char key, int x, int y )
             ContaTempo(3);
             break;
         case ' ':
-			if (Personagens[0].Velocidade == 0) {
-				if (Personagens[0].indoParaZ) {
-					Personagens[0].Velocidade = 1.0;
-				} else {
-					Personagens[0].Velocidade = -1.0;
-				}
-			} else {
-				Personagens[0].Velocidade = 0;
-			}
+			Personagens[0].Velocidade = Personagens[0].Velocidade == 1 ? 0 : 1;
             break;
         case 'c':
             Personagens[0].Rotacao-=180;
