@@ -292,9 +292,6 @@ void MovimentaPersonagens(double tempoDecorrido)
 
 		std::vector<int> curvasPossiveis;
 
-		//bool (*ligaCurvas)[26][26] = personagem->indoParaZ ?
-			//&ligaCurvasZ : &ligaCurvasX;
-
 		for (size_t j = 0; j < nCurvas; j++) {
 			if (personagem->indoParaZ){
                 if(ligaCurvasZ[personagem->nroDaCurva][j]) {
