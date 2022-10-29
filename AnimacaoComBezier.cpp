@@ -401,8 +401,8 @@ void keyboard ( unsigned char key, int x, int y )
             break;
         case 'c':
             Personagens[0].indoParaZ ^= true;
-			Personagens[0].tAtual = 1 - Personagens[0].tAtual;
-			Personagens[0].proxCurva = -1;
+			      Personagens[0].tAtual = 1 - Personagens[0].tAtual;
+			      Personagens[0].proxCurva = -1;
             break;
 		default:
 			break;
