@@ -48,6 +48,8 @@ double AccumDeltaT=0;
 Temporizador T2;
 
 InstanciaBZ Personagens[11];
+bool curvaFoiSelecionada = false;
+int curvaSelecionada = 0;
 
 Bezier Curvas[26];
 unsigned int nCurvas;
@@ -280,6 +282,12 @@ void MovimentaPersonagens(double tempoDecorrido)
 			continue;
 		}
 
+		if (personagem->tAtual == 1 && i == 0) {
+			curvaFoiSelecionada = false;
+			curvaSelecionada = 0;
+			continue;
+		}
+
 		std::vector<int> curvasPossiveis;
 
 		if (personagem->indoParaZ) {
@@ -296,8 +304,14 @@ void MovimentaPersonagens(double tempoDecorrido)
 			}
 		}
 
+		if (i != 0 || !curvaFoiSelecionada) {
+			personagem->proxCurva = curvasPossiveis[
+				rand() % curvasPossiveis.size()
+			];
+		}
+
 		personagem->proxCurva = curvasPossiveis[
-			rand() % curvasPossiveis.size()
+			curvaSelecionada % curvasPossiveis.size()
 		];
 	}
 }
@@ -402,10 +416,14 @@ void arrow_keys ( int a_keys, int x, int y )
 	switch ( a_keys )
 	{
         case GLUT_KEY_LEFT:
-			// TODO
+			curvaFoiSelecionada = true;
+			curvaSelecionada -= 1;
+			Personagens[0].proxCurva = -1;
             break;
         case GLUT_KEY_RIGHT:
-			// TODO
+			curvaFoiSelecionada = true;
+			curvaSelecionada += 1;
+			Personagens[0].proxCurva = -1;
             break;
 		case GLUT_KEY_UP:       // Se pressionar UP
 			glutFullScreen ( ); // Vai para Full Screen
