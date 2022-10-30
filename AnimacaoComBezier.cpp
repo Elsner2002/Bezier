@@ -150,7 +150,7 @@ void CriaInstancias()
     Personagens[0].cor= LimeGreen;
     Personagens[0].indoParaZ = true;
     Personagens[0].Escala = Ponto (0.4,0.4,0.4);
-	Personagens[0].Curva = &Curvas[0];
+	Personagens[0].Curva = &Curvas[rand() % 26];
     nInstancias = 11;
 
 	for (size_t i = 1; i < nInstancias; i++) {
@@ -174,7 +174,20 @@ void CriaInstancias()
 		Personagens[i].modelo = DesenhaInstancia;
 		Personagens[i].indoParaZ = true;
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
-		Personagens[i].nroDaCurva = i;
+        bool novaCurva = true;
+        do{
+            Personagens[i].nroDaCurva = rand() % 26;
+            for(int j=0; j<i; j++){
+                if(Personagens[i].nroDaCurva==Personagens[j].nroDaCurva){
+                    novaCurva=false;
+                    break;
+                }
+                else{
+                    novaCurva=true;
+                }
+
+            }
+        }while(!novaCurva);
 	}
 }
 
