@@ -145,19 +145,21 @@ void DesenhaInstancia()
 // **********************************************************************
 void CriaInstancias()
 {
+    int nc = rand()%26;
     Personagens[0].modelo = DesenhaInstancia;
     Personagens[0].cor= LimeGreen;
     Personagens[0].indoParaZ = true;
     Personagens[0].Escala = Ponto (0.4,0.4,0.4);
-	Personagens[0].Curva = &Curvas[25];
-    Personagens[0].nroDaCurva=25;
+	Personagens[0].Curva = &Curvas[nc];
+    Personagens[0].nroDaCurva=nc;
     Personagens[0].Posicao = Personagens[0].Curva->getPC(0);
     Personagens[0].parado=false;
     nInstancias = 11;
 
 	for (size_t i = 1; i < nInstancias; i++) {
         Personagens[i].parado=false;
-		Personagens[i].Curva = &Curvas[i];
+        nc = rand()%26;
+		Personagens[i].Curva = &Curvas[nc];
 		Personagens[i].Posicao = Personagens[i].Curva->getPC(0);
 
         bool existe=false;
@@ -177,7 +179,7 @@ void CriaInstancias()
 		Personagens[i].modelo = DesenhaInstancia;
 		Personagens[i].indoParaZ = true;
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
-        Personagens[i].nroDaCurva=i;
+        Personagens[i].nroDaCurva=nc;
 	}
 }
 
