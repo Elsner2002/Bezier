@@ -101,6 +101,9 @@ Ponto InstanciaBZ::ObtemPosicao()
 
 void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 {
+    if(parado){
+        return;
+    }
     double dist = Velocidade*tempoDecorrido;
 	double deltaT = Curva->CalculaT(dist);
 	tAtual += deltaT;

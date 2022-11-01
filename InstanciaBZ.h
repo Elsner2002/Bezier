@@ -33,6 +33,7 @@ public:
     int nroDaCurva;
     int proxCurva;
 	bool indoParaZ;
+    bool parado;
     int cor;
     float Velocidade;
     float tAtual;

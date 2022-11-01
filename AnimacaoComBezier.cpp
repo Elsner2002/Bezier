@@ -145,15 +145,18 @@ void DesenhaInstancia()
 // **********************************************************************
 void CriaInstancias()
 {
-    Personagens[0].Posicao = Ponto (3,0);
     Personagens[0].modelo = DesenhaInstancia;
     Personagens[0].cor= LimeGreen;
     Personagens[0].indoParaZ = true;
     Personagens[0].Escala = Ponto (0.4,0.4,0.4);
-	Personagens[0].Curva = &Curvas[rand() % 26];
+	Personagens[0].Curva = &Curvas[25];
+    Personagens[0].nroDaCurva=25;
+    Personagens[0].Posicao = Personagens[0].Curva->getPC(0);
+    Personagens[0].parado=false;
     nInstancias = 11;
 
 	for (size_t i = 1; i < nInstancias; i++) {
+        Personagens[i].parado=false;
 		Personagens[i].Curva = &Curvas[i];
 		Personagens[i].Posicao = Personagens[i].Curva->getPC(0);
 
@@ -174,20 +177,7 @@ void CriaInstancias()
 		Personagens[i].modelo = DesenhaInstancia;
 		Personagens[i].indoParaZ = true;
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
-        bool novaCurva = true;
-        do{
-            Personagens[i].nroDaCurva = rand() % 26;
-            for(int j=0; j<i; j++){
-                if(Personagens[i].nroDaCurva==Personagens[j].nroDaCurva){
-                    novaCurva=false;
-                    break;
-                }
-                else{
-                    novaCurva=true;
-                }
-
-            }
-        }while(!novaCurva);
+        Personagens[i].nroDaCurva=i;
 	}
 }
 
@@ -410,7 +400,7 @@ void keyboard ( unsigned char key, int x, int y )
             ContaTempo(3);
             break;
         case ' ':
-			Personagens[0].Velocidade = Personagens[0].Velocidade == 1 ? 0 : 1;
+			Personagens[0].parado=!Personagens[0].parado;
             break;
         case 'c':
             Personagens[0].indoParaZ ^= true;
