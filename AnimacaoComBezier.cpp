@@ -366,7 +366,6 @@ void MovimentaPersonagens(double tempoDecorrido)
 		InstanciaBZ *personagem = &Personagens[i];
 		personagem->AtualizaPosicao(tempoDecorrido);
 		CalculaEnvelope(personagem, i);
-		envelopes[i].desenhaPoligono();
 
 		if (i == 0) {
 			if (CalculaColisao(i)) {
