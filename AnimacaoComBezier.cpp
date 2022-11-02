@@ -451,6 +451,8 @@ int  main ( int argc, char** argv )
 {
     cout << "Programa OpenGL" << endl;
 
+	srand(time(NULL));
+
     glutInit            ( &argc, argv );
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB );
     glutInitWindowPosition (0,0);
