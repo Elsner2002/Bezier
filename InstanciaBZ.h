@@ -17,6 +17,7 @@ using namespace std;
 #include "Poligono.h"
 
 typedef void TipoFuncao();
+void InstanciaPonto(Ponto &p, Ponto &out);
 
 class InstanciaBZ{
 

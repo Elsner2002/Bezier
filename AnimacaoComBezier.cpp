@@ -48,6 +48,7 @@ double AccumDeltaT=0;
 Temporizador T2;
 
 InstanciaBZ Personagens[11];
+Poligono envelopes[11];
 bool curvaFoiSelecionada = false;
 int curvaSelecionada = 0;
 
@@ -64,6 +65,7 @@ bool ligaCurvasZ[26][26];
 bool desenha = false, mover=false;
 
 Poligono Mapa, MeiaSeta, Mastro, CurvasBZ, PontosCurvas;
+Poligono envelopeMastro;
 int nInstancias=0;
 
 float angulo=0.0;
@@ -181,6 +183,15 @@ void CriaInstancias()
 		Personagens[i].Escala = Ponto (0.4,0.4,0.4);
         Personagens[i].nroDaCurva=nc;
 	}
+
+	for (size_t i = 0; i < nInstancias; i++) {
+		Poligono envelope;
+		envelope.insereVertice(Ponto(0, 0));
+		envelope.insereVertice(Ponto(0, 0));
+		envelope.insereVertice(Ponto(0, 0));
+		envelope.insereVertice(Ponto(0, 0));
+		envelopes[i] = envelope;
+	}
 }
 
 void CarregaModelos()
@@ -188,6 +199,14 @@ void CarregaModelos()
     Mapa.LePoligono("EstadoRS.txt");
     MeiaSeta.LePoligono("MeiaSeta.txt");
     Mastro.LePoligono("Triangulo.txt");
+
+	Ponto min, max;
+	Mastro.obtemLimites(min, max);
+	envelopeMastro.insereVertice(Ponto(min.x, min.y));
+	envelopeMastro.insereVertice(Ponto(min.x, max.y));
+	envelopeMastro.insereVertice(Ponto(max.x, max.y));
+	envelopeMastro.insereVertice(Ponto(max.x, min.y));
+
     PontosCurvas.LePoligono("cordPontos.txt");
     CurvasBZ.LePoligonoZ("ListaCurvas.txt");
 }
@@ -266,11 +285,94 @@ void DesenhaPersonagens(float tempoDecorrido)
     }
 }
 
+void CalculaEnvelope(InstanciaBZ *personagem, size_t i)
+{
+	glPushMatrix();
+
+	glTranslatef(personagem->Posicao.x, personagem->Posicao.y, 0);
+	glRotatef(personagem->Rotacao, 0, 0, 1);
+	glScalef(personagem->Escala.x, personagem->Escala.y, personagem->Escala.z);
+
+	Ponto p = envelopeMastro.getVertice(0);
+	Ponto q = envelopeMastro.getVertice(1);
+	Ponto r = envelopeMastro.getVertice(2);
+	Ponto s = envelopeMastro.getVertice(3);
+
+	Ponto pSRU;
+	Ponto qSRU;
+	Ponto rSRU;
+	Ponto sSRU;
+
+	InstanciaPonto(p, pSRU);
+	InstanciaPonto(q, qSRU);
+	InstanciaPonto(r, rSRU);
+	InstanciaPonto(s, sSRU);
+
+	glPopMatrix();
+
+	Poligono oobb;
+	oobb.insereVertice(pSRU);
+	oobb.insereVertice(qSRU);
+	oobb.insereVertice(rSRU);
+	oobb.insereVertice(sSRU);
+
+	Ponto min, max;
+	oobb.obtemLimites(min, max);
+
+	envelopes[i].alteraVertice(0, Ponto(min.x, min.y));
+	envelopes[i].alteraVertice(1, Ponto(min.x, max.y));
+	envelopes[i].alteraVertice(2, Ponto(max.x, max.y));
+	envelopes[i].alteraVertice(3, Ponto(max.x, min.y));
+}
+
+bool CalculaColisao(size_t i) {
+	Ponto min, max;
+	envelopes[i].obtemLimites(min, max);
+	Ponto centroEnvelope((max.x + min.x) / 2, (max.y + min.y) / 2);
+
+	for (size_t j = 0; j < nInstancias; j++) {
+		if (i == j || Personagens[j].nroDaCurva != Personagens[i].nroDaCurva) {
+			continue;
+		}
+
+		Ponto minOutro, maxOutro;
+		envelopes[j].obtemLimites(minOutro, maxOutro);
+
+		Ponto centroEnvelopeOutro(
+			(maxOutro.x + minOutro.x) / 2, (maxOutro.y + minOutro.y) / 2
+		);
+
+		float larg1 = max.x - min.x;
+		float alt1 = max.y - min.y;
+		float larg2 = maxOutro.x - minOutro.x;
+		float alt2 = maxOutro.y - minOutro.y;
+
+		if (
+			centroEnvelope.x < centroEnvelopeOutro.x + larg2 &&
+			centroEnvelope.x + larg1 > centroEnvelopeOutro.x &&
+			centroEnvelope.y < centroEnvelopeOutro.y + alt2 &&
+			centroEnvelope.y + alt1 > centroEnvelopeOutro.y)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void MovimentaPersonagens(double tempoDecorrido)
 {
 	for(size_t i = 0; i < nInstancias; i++) {
 		InstanciaBZ *personagem = &Personagens[i];
 		personagem->AtualizaPosicao(tempoDecorrido);
+		CalculaEnvelope(personagem, i);
+		envelopes[i].desenhaPoligono();
+
+		if (i == 0) {
+			if (CalculaColisao(i)) {
+				exit(0);
+			}
+		}
 
 		if (personagem->proxCurva != -1) {
 			continue;
